@@ -16,9 +16,9 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 from celery.schedules import crontab
  
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
-CELERYBEAT_SCHEDULE = {
-    "get_articles": {
-        'task': "news.tasks.parse",
-        'schedule': timedelta(seconds=60),
-    },
-}
+# CELERYBEAT_SCHEDULE = {
+#     "get_articles": {
+#         'task': "news.tasks.parse",
+#         'schedule': timedelta(seconds=60),
+#     },
+# }

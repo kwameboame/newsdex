@@ -5,8 +5,7 @@ from .models import *
 import datetime 
 
 @task
-def parse(*args):
-    url = 'http://www.myjoyonline.com/pages/rss/site_politics.xml'
+def parse(url='http://www.myjoyonline.com/pages/rss/site_politics.xml'):
     feedData = feedparser.parse(url)
 
     try:
