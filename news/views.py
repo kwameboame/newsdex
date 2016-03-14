@@ -1,0 +1,72 @@
+from django.shortcuts import render, redirect
+from .models import Article, Feed
+from .forms import FeedForm
+from django.views import generic
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import feedparser
+import datetime
+
+# Create your views here.
+
+def articles_list(request):
+    articles = Article.objects.all().order_by('-publication_date')
+    rows = [articles[x:x+1] for x in range(0, len(articles), 1)]
+    # return render(request, 'news/articles_list.html', {'rows': rows})
+
+    paginator = Paginator(articles, 25) # Show 25 articles per page
+
+    page = request.GET.get('page')
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        articles = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        articles = paginator.page(paginator.num_pages)
+
+    # context = {
+    # 'object_list':rows,
+    # 'title' : 'list'
+    # }
+
+    return render(request, 'news/articles_list.html', {'rows' : rows})
+
+
+
+###Feeds Listing
+def feeds_list(request):
+    feeds = Feed.objects.all()
+    return render(request, 'news/feeds_list.html', {'feeds': feeds})
+
+def new_feed(request):
+    if request.method == "POST":
+        form = FeedForm(request.POST)
+        if form.is_valid():
+            feed = form.save(commit=False)
+
+            existingFeed = Feed.objects.filter(url = feed.url)
+            if len(existingFeed) == 0:
+                feedData = feedparser.parse(feed.url)
+
+                # set some fields
+                feed.title = feedData.feed.title
+                feed.save()
+
+                for entry in feedData.entries:
+                    article = Article()
+                    article.title = entry.title
+                    article.url = entry.link
+                    article.description = entry.description
+
+                    d = datetime.datetime(*(entry.published_parsed[0:6]))
+                    dateString = d.strftime('%Y-%m-%d %H:%M:%S')
+
+                    article.publication_date = dateString
+                    article.feed = feed
+                    article.save()
+
+            return redirect('news.views.feeds_list')
+    else:
+        form = FeedForm()
+    return render(request, 'news/new_feed.html', {'form': form})

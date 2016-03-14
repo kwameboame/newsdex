@@ -1,0 +1,34 @@
+{% extends 'news/base.html' %}
+
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container">
+    <h1>Ghana News Explorer</h1>
+    <p>Aggregating & Analyzing Ghana's news from top media houses.</p>
+  </div>
+</div>
+
+<div class="container">
+<div class="row">
+  <div class="col-md-6">
+  {% for row in rows %}
+    {% for entry in row %}
+    <li class="article">
+    <h2><a href="{{entry.url}}" target="_blank">{{entry.title}}</a></h2>
+    <span>{{entry.publication_date | safe}}</span>
+    <p>{{entry.description | safe}}</p>
+    <p><a href="{{entry.url}}" target="_blank" class="btn btn-primary">View Details</a></p>
+    {% endfor %}
+    </li>
+  {% endfor %}
+  </div>
+</div>
+
+  <footer>
+    <p>&copy; 2015 Django News Aggregator</p>
+  </footer>
+</div> <!-- /container -->
+
+{% endblock %}
