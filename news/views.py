@@ -5,6 +5,7 @@ from django.views import generic
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import feedparser
 import datetime
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -32,6 +33,23 @@ def articles_list(request):
 
     return render(request, 'news/articles_list.html', {'rows' : rows})
 
+
+@csrf_exempt
+def ajax_articles(request):
+    rows = []
+    if request.method =="GET":
+        try:
+            date_from = datetime.datetime.strptime(request.GET['date_from'], "%Y-%m-%d")
+        except:
+            date_from = datetime.date.today() - datetime.timedelta(days=5)
+        try:
+            date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d")
+        except:
+            date_to = datetime.date.today()
+        articles = Article.objects.filter(publication_date__range=(date_from, date_to)).order_by('-publication_date')
+        rows = [articles[x:x+1] for x in range(0, len(articles), 1)]
+
+    return render(request, 'news/articles_cycle.html', locals())# {'rows' : rows})
 
 
 ###Feeds Listing

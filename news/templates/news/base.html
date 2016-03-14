@@ -21,7 +21,7 @@
   .article img, .article p, .article div{
     display: none;
   }
-</style>>
+</style>
 
     <title>Ghana News Explorer</title>
 
@@ -58,8 +58,47 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <!-- need it for daterangepicker -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+     
+    <!-- Include Date Range Picker -->
+    <script type="text/javascript" src="http://www.daterangepicker.com/daterangepicker.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <script type="text/javascript">
+      $(function() {
+        $('#daterange').daterangepicker();
+        $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+          ajax_fill(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+        });
+        $('.date').click(function(){
+          var endDate = new Date();
+          var startDate = new Date(endDate.getTime() - parseInt($(this).data('delta')) * 24 * 60 * 60 * 1000);
+          ajax_fill(startDate, endDate);
+        });
+        function ajax_fill(startDate, endDate){
+          $.ajax({
+            url: '/news/ajax_articles',
+            method: 'GET',
+            data:{
+              'date_from': startDate.toString('yyyy-MM-dd'),
+              'date_to': endDate.toString('yyyy-MM-dd')
+            },
+            success: function (data) {
+              if(data.replace(/\s/g,"") == ""){
+                data = '<p>Nothing to show :(</p>';
+              }
+              console.log(data);
+              $('.cycle').html(data);
+            }
+                
+          });
+        }
+      });
+    </script>
   </body>
 </html>
