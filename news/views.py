@@ -57,6 +57,7 @@ def feeds_list(request):
     feeds = Feed.objects.all()
     return render(request, 'news/feeds_list.html', {'feeds': feeds})
 
+
 def new_feed(request):
     if request.method == "POST":
         form = FeedForm(request.POST)
