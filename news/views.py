@@ -43,10 +43,10 @@ def ajax_articles(request):
         except:
             date_from = datetime.date.today() - datetime.timedelta(days=5)
         try:
-            date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d")
+            date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d") + datetime.timedelta(days=1)
         except:
-            date_to = datetime.date.today()
-        articles = Article.objects.filter(publication_date__range=(date_from, date_to)).order_by('-publication_date')
+            date_to = datetime.date.today() + datetime.timedelta(days=1)
+        articles = Article.objects.filter(publication_date__range=[date_from, date_to]).order_by('-publication_date')
         rows = [articles[x:x+1] for x in range(0, len(articles), 1)]
 
     return render(request, 'news/articles_cycle.html', locals())# {'rows' : rows})
