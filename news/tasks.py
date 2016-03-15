@@ -5,28 +5,31 @@ from .models import *
 import datetime 
 
 @task
-def parse(url='http://www.myjoyonline.com/pages/rss/site_politics.xml'):
-    feedData = feedparser.parse(url)
+def parse(*args):
+    feeds = Feed.objects.filter(is_active=True)
+    print('Let try to parse all of feeds')
+    for feed in feeds:
+        feedData = feedparser.parse(feed.url)
 
-    try:
-        feed = Feed.objects.get(url=url)
-    except:
-        feed = Feed(url=url)
-        feed.title = feedData.feed.title
-        feed.save()
+        for entry in feedData.entries:
+            try:
+                article = Article.objects.get(url=entry.link)
+                print('Article exist:')
+            except:
+                article = Article()
+                article.title = entry.title
+                article.url = entry.link
+                article.description = entry.description
 
-    for entry in feedData.entries:
-        article = Article()
-        article.title = entry.title
-        article.url = entry.link
-        article.description = entry.description
+                d = datetime.datetime(*(entry.published_parsed[0:6]))
+                dateString = d.strftime('%Y-%m-%d %H:%M:%S')
 
-        d = datetime.datetime(*(entry.published_parsed[0:6]))
-        dateString = d.strftime('%Y-%m-%d %H:%M:%S')
+                article.publication_date = dateString
+                article.feed = feed
+                article.save()
 
-        article.publication_date = dateString
-        article.feed = feed
-        article.save()
+                print('Added article:')
 
-    print(feedData.entries)
-    print('done')
+            print(article.title)
+
+    print('Done')
