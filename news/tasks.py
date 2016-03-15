@@ -7,14 +7,18 @@ import datetime
 @task
 def parse(*args):
     feeds = Feed.objects.filter(is_active=True)
-    print('Let try to parse all of feeds')
+    print('== Let try to parse all of feeds ==')
+    print(feeds)
     for feed in feeds:
         feedData = feedparser.parse(feed.url)
-
+        print('-- Feed is: --')
+        print(feed.title)
+        print('-- There are entries in feed: --')
+        print(len(feedData.entries))
         for entry in feedData.entries:
             try:
                 article = Article.objects.get(url=entry.link)
-                print('Article exist:')
+                print('-- Article exist: --')
             except:
                 article = Article()
                 article.title = entry.title
@@ -28,8 +32,8 @@ def parse(*args):
                 article.feed = feed
                 article.save()
 
-                print('Added article:')
+                print('-- Added article: --')
 
             print(article.title)
 
-    print('Done')
+    print('== Done ==')
