@@ -43,9 +43,9 @@ def ajax_articles(request):
         except:
             date_from = datetime.date.today() - datetime.timedelta(days=5)
         try:
-            date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d") + datetime.timedelta(days=1)
+            date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d").replace(hour=23, minute=59, second=59)
         except:
-            date_to = datetime.date.today() + datetime.timedelta(days=1)
+            date_to = datetime.date.today().replace(hour=23, minute=59, second=59)
         articles = Article.objects.filter(publication_date__range=[date_from, date_to]).order_by('-publication_date')
         rows = [articles[x:x+1] for x in range(0, len(articles), 1)]
 
