@@ -4,7 +4,8 @@ import feedparser
 from news import views
 from .models import *
 import datetime 
-
+from readability.readability import Document
+import re
 
 
 @task
@@ -36,7 +37,7 @@ def parse(*args):
                             'Connection': 'close'
                             }
                         )                
-                    article.content = req.text
+                    article.content = re.sub('<[^<]+?>', '', Document(req.text).summary())
                     d = datetime.datetime(*(entry.published_parsed[0:6]))
                     dateString = d.strftime('%Y-%m-%d %H:%M:%S')
 

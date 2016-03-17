@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
 import requests
+from readability.readability import Document
+import re
 from .models import Article, Feed
 from .forms import FeedForm
 from django.views import generic
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import feedparser
 import datetime
@@ -85,9 +88,10 @@ def new_feed(request):
                             'Accept-Encoding': 'gzip, deflate', 
                             'Connection': 'close'
                             }
-                        )                
-                    article.content = req.text
+                        )
+                    article.content = re.sub('<[^<]+?>', '', Document(req.text).summary())
 
+                    print(article.content)
                     d = datetime.datetime(*(entry.published_parsed[0:6]))
                     dateString = d.strftime('%Y-%m-%d %H:%M:%S')
 
