@@ -48,7 +48,10 @@ BROKER_URL = 'redis://127.0.0.1:6379/0'
 BROKER_TRANSPORT = 'redis'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 5342a81c05eeba7229fd28903cc8372ff24ff445
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,6 +89,14 @@ WSGI_APPLICATION = 'newsproject.wsgi.application'
 
 DATABASES = {
     'default': {
+<<<<<<< HEAD
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'newsdex',                      # Or path to database file if using sqlite3.
+        'USER': 'kwame',                      # Not used with sqlite3.
+        'PASSWORD': 'sosthenes559',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+=======
         'ENGINE': 'django.db.backends.sqlite3', # 'django.db.backends.postgresql_psycopg2', 
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -94,6 +105,7 @@ DATABASES = {
         #'PASSWORD': '***',                  # Not used with sqlite3.
         #'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         #'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+>>>>>>> 5342a81c05eeba7229fd28903cc8372ff24ff445
     }
 }
 

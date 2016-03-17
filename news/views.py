@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+import http.cookiejar, urllib.request
 from .models import Article, Feed
 from .forms import FeedForm
 from django.views import generic
@@ -77,6 +78,11 @@ def new_feed(request):
                     article.title = entry.title
                     article.url = entry.link
                     article.description = entry.description
+                    cj = http.cookiejar.CookieJar()
+                    # opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+                    # url_open = opener.open(article.url)
+                    # article.content = url_open.read()                    
+                    # article.content = urlopen(article.url).read()
 
                     d = datetime.datetime(*(entry.published_parsed[0:6]))
                     dateString = d.strftime('%Y-%m-%d %H:%M:%S')
