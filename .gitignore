@@ -64,3 +64,7 @@ target/
 
 # pyenv
 .python-version
+
+
+migrations/
+settings.py
