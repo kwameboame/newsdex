@@ -2,23 +2,44 @@ from django.shortcuts import render, redirect
 import requests
 from readability.readability import Document
 import re
-from .models import Article, Feed
+from .models import *
 from .forms import FeedForm
-from django.views import generic
-
+from .tasks import parse, parse_feed
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import feedparser
 import datetime
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+import sys
 
+
+def print_http_response(f):
+    """ Wraps a python function that prints to the console, and
+    returns those results as a HttpResponse (HTML)"""
+
+    class WritableObject:
+        def __init__(self):
+            self.content = []
+
+        def write(self, string):
+            self.content.append(string)
+
+    def new_f(*args, **kwargs):
+        printed = WritableObject()
+        sys.stdout = printed
+        f(*args, **kwargs)
+        sys.stdout = sys.__stdout__
+        return HttpResponse(['<BR>' if c == '\n' else c for c in printed.content ])
+    return new_f
 # Create your views here.
+
 
 def articles_list(request):
     articles = Article.objects.all().order_by('-publication_date')
     rows = [articles[x:x+1] for x in range(0, len(articles), 1)]
     # return render(request, 'news/articles_list.html', {'rows': rows})
 
-    paginator = Paginator(articles, 25) # Show 25 articles per page
+    paginator = Paginator(articles, 25)  # Show 25 articles per page
 
     page = request.GET.get('page')
     try:
@@ -35,13 +56,13 @@ def articles_list(request):
     # 'title' : 'list'
     # }
 
-    return render(request, 'news/articles_list.html', {'rows' : rows})
+    return render(request, 'news/articles_list.html', {'rows': rows})
 
 
 @csrf_exempt
 def ajax_articles(request):
     rows = []
-    if request.method =="GET":
+    if request.method == "GET":
         try:
             date_from = datetime.datetime.strptime(request.GET['date_from'], "%Y-%m-%d")
         except:
@@ -68,38 +89,20 @@ def new_feed(request):
         if form.is_valid():
             feed = form.save(commit=False)
 
-            existingFeed = Feed.objects.filter(url = feed.url)
+            existingFeed = Feed.objects.filter(url=feed.url)
             if len(existingFeed) == 0:
                 feedData = feedparser.parse(feed.url)
 
                 # set some fields
                 feed.title = feedData.feed.title
                 feed.save()
-
-                for entry in feedData.entries:
-                    article = Article()
-                    article.title = entry.title
-                    article.url = entry.link
-                    article.description = entry.description
-                    req=requests.get(entry.link, 
-                        headers= {
-                            'Accept': 'text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1', 
-                            'User-Agent': 'Opera/9.80 (Macintosh; Intel Mac OS X 10.9.5) Presto/2.12.388 Version/12.15', 
-                            'Accept-Encoding': 'gzip, deflate', 
-                            'Connection': 'close'
-                            }
-                        )
-                    article.content = re.sub('<[^<]+?>', '', Document(req.text).summary())
-
-                    print(article.content)
-                    d = datetime.datetime(*(entry.published_parsed[0:6]))
-                    dateString = d.strftime('%Y-%m-%d %H:%M:%S')
-
-                    article.publication_date = dateString
-                    article.feed = feed
-                    article.save()
-
+                parse_feed([feed])
             return redirect('news.views.feeds_list')
     else:
         form = FeedForm()
     return render(request, 'news/new_feed.html', {'form': form})
+
+
+@print_http_response
+def parse_manual(request):
+    parse()

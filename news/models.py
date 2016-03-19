@@ -10,6 +10,7 @@ class Feed(models.Model):
     def __str__(self):
         return self.title
 
+
 class Article(models.Model):
     feed = models.ForeignKey(Feed)
     title = models.CharField(max_length=200)
@@ -20,3 +21,22 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class FacebookPage(models.Model):
+    title = models.CharField(max_length=255)
+    url = models.URLField()
+    is_active = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.title
+
+
+class FacebookPost(models.Model):
+    parent_page = models.ForeignKey(FacebookPage)
+    created_time = models.DateTimeField()
+    text = models.TextField()
+    post_id = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.post_id
