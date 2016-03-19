@@ -73,8 +73,8 @@ def parse_feed(feeds):
                         print('-- Error: --')
                         print(output)
                         print('-- Failed to add article: --')
-                    else:
-                        print('-- Article exist: --')
+                else:
+                    print('-- Article exist: --')
             try:
                 print(article.title)
             except:
