@@ -148,6 +148,7 @@ def parse_facebook(pages):
                                 new_user.save()
                                 print('-- New user added to db --')
                             new_comment = FacebookComment()
+                            new_comment.post_id = new_post
                             new_comment.user_id = new_user
                             new_comment.created_time = datetime.datetime.strptime((comment['created_time']).split("+")[0], '%Y-%m-%dT%H:%M:%S')
                             if 'message' in comment:

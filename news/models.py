@@ -51,6 +51,7 @@ class FacebookUser(models.Model):
         
         
 class FacebookComment(models.Model):
+    # post_id = models.ForeignKey(FacebookPost, blank=True, null=True)
     user_id = models.ForeignKey(FacebookUser)
     created_time = models.DateTimeField()
     message = models.TextField()
