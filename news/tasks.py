@@ -100,10 +100,10 @@ def parse_facebook(pages):
                     print('Unavaliable to print profile data')
                 posts = graph.get_connections(profile['id'], 'posts')
                 print('-- Get data: --')
-                try:
-                    print(posts)
-                except:
-                    print('Unavaliable to print posts data')
+                # try:
+                #     print(posts)
+                # except:
+                #     print('Unavaliable to print posts data')
                 for post in posts['data']:
                     print('-- Here is post: --')
                     try:
@@ -125,6 +125,38 @@ def parse_facebook(pages):
                         new_post.post_id = post['id']
                         new_post.save()
                         print('-- Post saved in db --')
+                        
+                    print('## Comments data ##')
+                    comments = graph.get_connections(id=post['id'], connection_name='comments')
+                    for comment in comments['data']:
+                        print('-- Here is comment: --')
+                        try:
+                            print(comment)
+                        except:
+                            print('Unavaliable to print comment data')
+                        try:
+                            new_comment = FacebookComment.objects.get(comment_id=comment['id'])
+                            print('-- Comment exist in db --')
+                        except:
+                            try:
+                                new_user = FacebookUser.objects.get(user_id=comment['from']['id'])
+                                print('-- User exist in db --')
+                            except:
+                                new_user = FacebookUser()
+                                new_user.user_id = comment['from']['id']
+                                new_user.name = comment['from']['name']
+                                new_user.save()
+                                print('-- New user added to db --')
+                            new_comment = FacebookComment()
+                            new_comment.user_id = new_user
+                            new_comment.created_time = datetime.datetime.strptime((comment['created_time']).split("+")[0], '%Y-%m-%dT%H:%M:%S')
+                            if 'message' in comment:
+                                new_comment.message = comment['message']
+                            elif 'story' in comment:
+                                new_comment.message = comment['story']
+                            new_comment.comment_id = comment['id']
+                            new_comment.save()
+                            print('-- Comment saved in db --')
             except:
                 print('-- Something went wrong :( --')
     else:
