@@ -11,6 +11,13 @@ class Feed(models.Model):
         return self.title
 
 
+class Word(models.Model):
+    word = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return self.word
+
+
 class Article(models.Model):
     feed = models.ForeignKey(Feed)
     title = models.CharField(max_length=200)
@@ -18,7 +25,8 @@ class Article(models.Model):
     description = models.TextField()
     content = models.TextField(default="")
     publication_date = models.DateTimeField()
-
+    words = models.ManyToManyField(Word)
+    
     def __str__(self):
         return self.title
 

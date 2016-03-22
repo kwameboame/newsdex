@@ -194,7 +194,7 @@ words = get_most_common_words(text, 10, remove_stopwords=True)
 for word in words:
    print(word['word'] + ' ' + str(word['count']))
 """
-
+        for
 @print_http_response
 def nltk_all(request):
     articles = Article.objects.all()
@@ -222,6 +222,4 @@ def nltk_all(request):
             
             
 @print_http_response
-def nltk_for_date(request):
-    date = datetime.datetime.strptime(request.GET['date'], "%Y-%m-%d")
-    articles = Article.objects.filter(publication_date=date)
+def nltk_all(request):

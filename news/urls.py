@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^feeds/', views.feeds_list, name='feeds_list'),
     url(r'^ajax_articles', views.ajax_articles, name='ajax_articles'),
     url(r'^parse', views.parse_manual),
-       
+    url(r'^nltk', views.nltk_all),   
 ]

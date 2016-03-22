@@ -212,7 +212,7 @@ def nltk_all(request):
                 new_word = Word(word=word['word'])
                 new_word.save()
                 print('Thats new word!')
-            try:
+            if article.words.filter(slug=requested_slug).exists():
                 if not article.words.filter(word=new_word).exists():
                     article.words.add(new_word)
                     article.save()
@@ -222,6 +222,4 @@ def nltk_all(request):
             
             
 @print_http_response
-def nltk_for_date(request):
-    date = datetime.datetime.strptime(request.GET['date'], "%Y-%m-%d")
-    articles = Article.objects.filter(publication_date=date)
+def nltk_all(request):

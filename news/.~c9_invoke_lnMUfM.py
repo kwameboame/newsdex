@@ -109,7 +109,7 @@ def parse_manual(request):
 
 
 """ NLTK """
-
+    articles
 # sudo pip install -U nltk
 # python
 # >>> import nltk
@@ -222,6 +222,4 @@ def nltk_all(request):
             
             
 @print_http_response
-def nltk_for_date(request):
-    date = datetime.datetime.strptime(request.GET['date'], "%Y-%m-%d")
-    articles = Article.objects.filter(publication_date=date)
+def nltk_all(request):
