@@ -13,6 +13,7 @@ class Feed(models.Model):
 
 class Word(models.Model):
     word = models.CharField(max_length=200)
+    pos = models.CharField(max_length=20)
     
     def __str__(self):
         return self.word
@@ -45,7 +46,9 @@ class FacebookPost(models.Model):
     created_time = models.DateTimeField()
     text = models.TextField()
     post_id = models.CharField(max_length=255)
-
+    words = models.ManyToManyField(Word)
+    
+    
     def __str__(self):
         return self.post_id
         
@@ -55,7 +58,7 @@ class FacebookUser(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.user_id        
+        return self.name        
         
         
 class FacebookComment(models.Model):
@@ -65,5 +68,6 @@ class FacebookComment(models.Model):
     message = models.TextField()
     comment_id = models.CharField(max_length=255)
 
+    words = models.ManyToManyField(Word)
     def __str__(self):
         return self.comment_id
