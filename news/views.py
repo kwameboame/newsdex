@@ -156,7 +156,7 @@ def get_most_common_words(text, words_count, remove_stopwords=False):
     tagged_words = nltk.pos_tag(tagged_words)
  
     # Make all words lower case
-    tagged_words = [(tagged_word[0].lower(), tagged_word[1]) for tagged_word in tagged_words]
+    # tagged_words = [(tagged_word[0].lower(), tagged_word[1]) for tagged_word in tagged_words]
  
     # Remove single-character tokens (mostly punctuation)
     tagged_words = [tagged_word for tagged_word in tagged_words if len(tagged_word[0]) > 1]
@@ -175,7 +175,7 @@ def get_most_common_words(text, words_count, remove_stopwords=False):
         pos = wordnet_pos_code(tagged_word[1])
         # Ignoring all words, except nouns, verbs, adjectives and adverbs
         if pos is not None:
-            words.append(lemmatizer.lemmatize(tagged_word[0], pos=pos))
+            words.append((lemmatizer.lemmatize(tagged_word[0], pos=pos), tagged_word[1]))
  
     # Calculate frequency distribution
     fdist = nltk.FreqDist(words)
@@ -213,11 +213,12 @@ def nltk_all(request):
         words = get_most_common_words(article.content, 10, remove_stopwords=True)
         print('Words are:')
         for word in words:
-            print(word['word'])
+            print(word['word'][0])
             try:
-                new_word = Word.objects.get(word=word['word'])
+                new_word = Word.objects.get(word=word['word'][0], pos=word['word'][1])
+                print('Word exists in db')
             except:
-                new_word = Word(word=word['word'])
+                new_word = Word(word=word['word'][0], pos=word['word'][1])
                 new_word.save()
                 print('Thats new word!')
             try:
@@ -225,11 +226,176 @@ def nltk_all(request):
                     article.words.add(new_word)
                     article.save()
                     print('Word added to article')
+                else:
+                    print('Word exists in article')
             except:
                 print('something went wrong')
-            
-            
+    
+    
+    posts = FacebookPost.objects.all()
+    
+    for post in posts:
+        print('Get post:')
+        print(post.post_id)
+        words = get_most_common_words(post.text, 10, remove_stopwords=True)
+        print('Words are:')
+        for word in words:
+            print(word['word'][0])
+            try:
+                new_word = Word.objects.get(word=word['word'][0], pos=word['word'][1])
+                print('Word exists in db')
+            except:
+                new_word = Word(word=word['word'][0], pos=word['word'][1])
+                new_word.save()
+                print('Thats new word!')
+            try:
+                if not post.words.filter(word=new_word).exists():
+                    post.words.add(new_word)
+                    post.save()
+                    print('Word added to post')
+                else:
+                    print('Word exists in post')
+            except:
+                print('something went wrong')
+    
+    comments = FacebookComment.objects.all()
+    
+    for comment in comments:
+        print('Get comment:')
+        print(comment.comment_id)
+        words = get_most_common_words(comment.message, 10, remove_stopwords=True)
+        print('Words are:')
+        for word in words:
+            print(word['word'][0])
+            try:
+                new_word = Word.objects.get(word=word['word'][0], pos=word['word'][1])
+                print('Word exists in db')
+            except:
+                new_word = Word(word=word['word'][0], pos=word['word'][1])
+                new_word.save()
+                print('Thats new word!')
+            try:
+                if not comment.words.filter(word=new_word).exists():
+                    comment.words.add(new_word)
+                    comment.save()
+                    print('Word added to comment')
+                else:
+                    print('Word exists in comment')
+            except:
+                print('something went wrong')   
+        
+import operator
+    
 @print_http_response
 def nltk_for_date(request):
-    date = datetime.datetime.strptime(request.GET['date'], "%Y-%m-%d")
-    articles = Article.objects.filter(publication_date=date)
+    try:
+        date = datetime.datetime.strptime(request.GET['date'], "%Y-%m-%d").date()
+    except:
+        date = datetime.date.today()
+    articles = Article.objects.filter(publication_date__contains=date)
+    trend_words = {}
+    print(date)
+    for article in articles:
+        for word in article.words.all():
+            try:
+                trend_words[word.word] = trend_words[word.word] + 1
+            except:
+                trend_words[word.word] = 1
+               
+    posts = FacebookPost.objects.filter(created_time__contains=date)
+    trend_words2 = {}
+    for post in posts:
+        for word in post.words.all():
+            try:
+                trend_words2[word.word] = trend_words2[word.word] + 1
+            except:
+                trend_words2[word.word] = 1
+                
+    comments = FacebookComment.objects.filter(created_time__contains=date)
+    trend_words3 = {}
+    for comment in comments:
+        for word in comment.words.all():
+            try:
+                trend_words3[word.word] = trend_words3[word.word] + 1
+            except:
+                trend_words3[word.word] = 1
+                
+    sorted_words = sorted(trend_words.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_words2 = sorted(trend_words2.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_words3 = sorted(trend_words3.items(), key=operator.itemgetter(1), reverse=True)
+    
+    print('Articles top words')
+    for key, value in sorted_words:
+        print(key)
+        print(value)
+        
+    print('FacebookPost top words')
+    for key, value in sorted_words2:
+        print(key)
+        print(value)
+    
+    print('FacebookComment top words')
+    for key, value in sorted_words3:
+        print(key)
+        print(value)
+
+
+
+@print_http_response
+def nltk_for_range(request):
+    try:
+        date_from = datetime.datetime.strptime(request.GET['date_from'], "%Y-%m-%d")
+    except:
+        date_from = datetime.date.today() - datetime.timedelta(days=5)
+    try:
+        date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+    except:
+        date_to = datetime.date.today().replace(hour=23, minute=59, second=59)
+        
+    articles = Article.objects.filter(publication_date__range=[date_from, date_to])
+    trend_words = {}
+    print(date_from)
+    print(date_to)
+    for article in articles:
+        for word in article.words.all():
+            try:
+                trend_words[word.word] = trend_words[word.word] + 1
+            except:
+                trend_words[word.word] = 1
+                
+    trend_words2 = {}
+    posts = FacebookPost.objects.filter(created_time__range=[date_from, date_to])
+    for post in posts:
+        for word in post.words.all():
+            try:
+                trend_words2[word.word] = trend_words2[word.word] + 1
+            except:
+                trend_words2[word.word] = 1
+                
+    trend_words3 = {}
+    comments = FacebookComment.objects.filter(created_time__range=[date_from, date_to])
+    for comment in comments:
+        for word in comment.words.all():
+            try:
+                trend_words3[word.word] = trend_words3[word.word] + 1
+            except:
+                trend_words3[word.word] = 1
+                
+    sorted_words = sorted(trend_words.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_words2 = sorted(trend_words2.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_words3 = sorted(trend_words3.items(), key=operator.itemgetter(1), reverse=True)
+    
+    print('Articles top words')
+    for key, value in sorted_words:
+        print(key)
+        print(value)
+        
+    print('FacebookPost top words')
+    for key, value in sorted_words2:
+        print(key)
+        print(value)
+    
+    print('FacebookComment top words')
+    for key, value in sorted_words3:
+        print(key)
+        print(value)
