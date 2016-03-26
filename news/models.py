@@ -10,6 +10,12 @@ class Feed(models.Model):
     def __str__(self):
         return self.title
 
+class Tracked_Word(models.Model):
+    tracked_word = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.tracked_word
+        
 
 class Word(models.Model):
     word = models.CharField(max_length=200)

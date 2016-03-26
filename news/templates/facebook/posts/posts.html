@@ -1,0 +1,34 @@
+{% extends 'news/base.html' %}
+
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container">
+    <h1>Ghana News Explorer</h1>
+    <p>Have a look around to see some of the latest and greatest news articles from your favorite feeds.</p>
+  </div>
+</div>
+
+<div class="container">
+<div class="row">
+  <div class="col-md-6">
+{% if facebook_posts %}
+  {% for facebookpost in facebook_posts %}
+    <li class="article">
+    <h2><a href="#" target="_blank">{{facebookpost.text}}</a></h2>
+    <span>{{facebookpost.created_time | safe}}</span>
+    <p>{{facebookpost.parent_page}}</p>
+    </li>
+  {% endfor %}
+{% endif %}
+  </div>
+</div>
+
+
+  <footer>
+    <p>&copy; 2016 Ghana News Explorer</p>
+  </footer>
+</div> <!-- /container -->
+
+{% endblock %}

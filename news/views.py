@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 import requests
 from readability.readability import Document
 import re
+from django.views import generic
 from .models import *
 from .forms import FeedForm
 from .tasks import parse, parse_feed
@@ -76,6 +77,13 @@ def ajax_articles(request):
 
     return render(request, 'news/articles_cycle.html', locals())# {'rows' : rows})
 
+
+class FacebookPostView(generic.ListView):
+    template_name= 'facebook/posts/posts.html'
+    context_object_name = 'facebook_posts'
+
+    def get_queryset(self):
+        return FacebookPost.objects.order_by('-created_time')[:20]
 
 ###Feeds Listing
 def feeds_list(request):

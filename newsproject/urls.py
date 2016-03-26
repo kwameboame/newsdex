@@ -21,5 +21,6 @@ from news import views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^news/', include('news.urls')),
+    url(r'^facebook/posts', views.FacebookPostView.as_view(), name='facebook_posts'),
     url(r'^$', views.articles_list, name='homepage')
 ]
