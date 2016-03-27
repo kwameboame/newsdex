@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -9,13 +10,15 @@ class Feed(models.Model):
 
     def __str__(self):
         return self.title
+        
 
 class Tracked_Word(models.Model):
-    tracked_word = models.CharField(max_length=100)
+    tracked_word = models.CharField(max_length=100, null=True, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.tracked_word
-        
+
 
 class Word(models.Model):
     word = models.CharField(max_length=200)
@@ -33,6 +36,7 @@ class Article(models.Model):
     content = models.TextField(default="")
     publication_date = models.DateTimeField()
     words = models.ManyToManyField(Word)
+    tracked_words = models.ManyToManyField(Tracked_Word)
     
     def __str__(self):
         return self.title
@@ -53,6 +57,7 @@ class FacebookPost(models.Model):
     text = models.TextField()
     post_id = models.CharField(max_length=255)
     words = models.ManyToManyField(Word)
+    tracked_words = models.ManyToManyField(Tracked_Word)
     
     
     def __str__(self):
@@ -73,7 +78,8 @@ class FacebookComment(models.Model):
     created_time = models.DateTimeField()
     message = models.TextField()
     comment_id = models.CharField(max_length=255)
-
     words = models.ManyToManyField(Word)
+    tracked_words = models.ManyToManyField(Tracked_Word)
+
     def __str__(self):
         return self.comment_id

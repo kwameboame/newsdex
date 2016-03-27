@@ -1,17 +1,13 @@
 from django.shortcuts import render, redirect
-import requests
 from readability.readability import Document
-import re
 from django.views import generic
 from .models import *
 from .forms import FeedForm
 from .tasks import parse, parse_feed
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import feedparser
-import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-import sys
+import sys, operator, re, requests, feedparser, datetime
 
 
 def print_http_response(f):
@@ -282,10 +278,18 @@ def nltk_all(request):
                 else:
                     print('Word exists in comment')
             except:
-                print('something went wrong')   
-        
-import operator
-    
+                print('something went wrong')
+
+
+class TrackedWordView(generic.ListView):
+    template_name= 'tracked/tracked.html'
+    context_object_name = 'tracked_words'
+
+    def get_queryset(self):
+        return Tracked_Word.objects.order_by('-created_time')[:20]
+
+
+
 @print_http_response
 def nltk_for_date(request):
     try:
@@ -338,6 +342,7 @@ def nltk_for_date(request):
     for key, value in sorted_words3:
         print(key)
         print(value)
+
 
 
 

@@ -1,0 +1,33 @@
+{% extends 'news/base.html' %}
+
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container">
+    <h1>Tracked Words</h1>
+    <p>Should Show Tracked words and all posts (articles, facebook posts and facebook comments) related to each keyword.</p>
+  </div>
+</div>
+
+<div class="container">
+<div class="row">
+  <div class="col-md-6">
+{% if tracked_words %}
+  {% for trackedword in tracked_words %}
+    <li class="article">
+    <h2><a href="#" target="_blank">{{trackedword.tracked_word}}</a></h2>
+    </li>
+
+  {% endfor %}
+{% endif %}
+  </div>
+</div>
+
+
+  <footer>
+    <p>&copy; 2016 Ghana News Explorer</p>
+  </footer>
+</div> <!-- /container -->
+
+{% endblock %}
