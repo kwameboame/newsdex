@@ -1,12 +1,14 @@
+from urllib.error import HTTPError
 from celery.decorators import task
 import requests
 import feedparser
+from django.db.models import Q
+
 from .models import *
 import datetime
 from readability.readability import Document
 import re
 import facebook
-
 
 FACEBOOK_CLIENT_ID = '105323143198945'
 FACEBOOK_CLIENT_SECRET = 'e10beb3dc3a388480927d29493168545'
@@ -15,9 +17,9 @@ FACEBOOK_CLIENT_SECRET = 'e10beb3dc3a388480927d29493168545'
 def get_access_token(client_id, client_secret):
     url = 'https://graph.facebook.com/oauth/access_token'
     params = {
-                'client_id': client_id,
-                'client_secret': client_secret,
-                'grant_type': 'client_credentials',
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'grant_type': 'client_credentials',
 
     }
     req = requests.get(url, params=params)
@@ -28,51 +30,50 @@ def get_access_token(client_id, client_secret):
         return None
 
 
-def parse_feed(feeds):
+def parse_feed(feed_urls):
     print('== Let try to parse all of feeds ==')
     print('There are count feeds:')
-    print(len(feeds))
-    for feed in feeds:
-        feedData = feedparser.parse(feed.url)
+    print(len(feed_urls))
+    for url in feed_urls:
+        feedData = feedparser.parse(url)
+        feedTitle = feedData.feed.title
+        feed = Feed.objects.create(url=url, title=feedTitle)
         print('== Feed is: ==')
         print(feed.title)
         print('-- There are entries in feed: --')
         print(len(feedData.entries))
         for entry in feedData.entries:
             try:
-                article = Article.objects.get(url=entry.link)
+                article = Article.objects.get(Q(url=entry.link) | Q(title=entry.title))
                 print('-- Article exist: --')
-            except:
-                article = Article.objects.filter(title=entry.title)
-                if len(article) == 0:
-                    article = Article()  # we just create empty object
-                    article.title = entry.title
-                    article.url = entry.link
-                    article.description = entry.description
-                    try:
-                        req=requests.get(entry.link,
-                            headers= { 
-                                'Accept': 'text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1', 
-                                'User-Agent': 'Opera/9.80 (Macintosh; Intel Mac OS X 10.9.5) Presto/2.12.388 Version/12.15', 
-                                'Accept-Encoding': 'gzip, deflate', 
-                                'Connection': 'close'
-                                }
-                            )                
-                        article.content = re.sub('<[^<]+?>', '', Document(req.text).summary())
-                        d = datetime.datetime(*(entry.published_parsed[0:6]))
-                        dateString = d.strftime('%Y-%m-%d %H:%M:%S')
+            except Article.DoesNotExist:
+                article = Article()  # we just create empty object
+                article.title = entry.title
+                article.url = entry.link
+                article.description = entry.description
+                try:
+                    req = requests.get(entry.link,
+                                       headers={
+                                           'Accept': 'text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1',
+                                           'User-Agent': 'Opera/9.80 (Macintosh; Intel Mac OS X 10.9.5) Presto/2.12.388 Version/12.15',
+                                           'Accept-Encoding': 'gzip, deflate',
+                                           'Connection': 'close'
+                                       })
+                    article.content = re.sub('<[^<]+?>', '', Document(req.text).summary())
+                    d = datetime.datetime(*(entry.published_parsed[0:6]))
+                    dateString = d.strftime('%Y-%m-%d %H:%M:%S')
 
-                        article.publication_date = dateString
-                        article.feed = feed
-                        article.save()
+                    article.publication_date = dateString
+                    article.feed = feed
+                    article.save()
 
-                        print('-- Added article: --')
+                    print('-- Added article: --')
 
-                    except urllib.request.HTTPError as inst:
-                        output = format(inst)
-                        print('-- Error: --')
-                        print(output)
-                        print('-- Failed to add article: --')
+                except HTTPError as inst:
+                    output = format(inst)
+                    print('-- Error: --')
+                    print(output)
+                    print('-- Failed to add article: --')
                 else:
                     print('-- Article exist: --')
             try:
@@ -125,7 +126,7 @@ def parse_facebook(pages):
                         new_post.post_id = post['id']
                         new_post.save()
                         print('-- Post saved in db --')
-                        
+
                     print('## Comments data ##')
                     comments = graph.get_connections(id=post['id'], connection_name='comments')
                     for comment in comments['data']:
@@ -164,17 +165,28 @@ def parse_facebook(pages):
         print('-- Access token is None --')
         pass
 
+
 @task
-def parse(feed=None, page=None, *args):
-    if feed:
-        parse_feed([feed])
+def parse_feed_task(feed_url=None):
+    if feed_url:
+        parse_feed([feed_url])
     else:
-        feeds = Feed.objects.filter(is_active=True)
-        parse_feed(feeds)
+        feed_urls = [item[0] for item in Feed.objects.filter(is_active=True).values_list('url')]
+        parse_feed(feed_urls)
+
+
+@task
+def parse_facebook_task(page=None):
     if page:
         parse_facebook([page])
     else:
         pages = FacebookPage.objects.filter(is_active=True)
         parse_facebook(pages)
+
+
+@task
+def parse_all_task(feed_url=None, page=None, *args):
+    parse_feed_task(feed_url)
+    parse_facebook_task(page)
 
     print('== Done ==')

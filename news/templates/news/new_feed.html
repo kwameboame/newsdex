@@ -2,25 +2,24 @@
 
 {% block content %}
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-  <div class="container">
-    <h1>New Feed</h1>
-  </div>
-</div>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1>New Feed</h1>
+        </div>
+    </div>
 
-<div class="container">
-  <form method="post">
-    <!-- {% csrf_token %} -->
-    {{ form.as_p }}
-    <hr>
-    <button type="submit" class="btn btn-primary">Save</button>
-    {% csrf_token %}
-  </form>
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <hr>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
 
-  <footer>
-    <p>&copy; 2016 Ghana News Explorer</p>
-  </footer>
-</div> <!-- /container -->
+        <footer>
+            <p>&copy; 2016 Ghana News Explorer</p>
+        </footer>
+    </div> <!-- /container -->
 
 {% endblock %}

@@ -3,18 +3,18 @@
         {% for entry in row %}
             <li class="article">
                 <h2>
-                    <a href="{{entry.url}}" target="_blank">
-                        {{entry.title}}
+                    <a href="{{ entry.url }}" target="_blank">
+                        {{ entry.title }}
                     </a>
                 </h2>
-                <span>{{entry.publication_date | safe}}</span>
-                <p>{{entry.description | safe}}</p>
+                <span>{{ entry.publication_date | safe }}</span>
+                <p>{{ entry.description | safe }}</p>
                 <p>
-                    <a href="{{entry.url}}" target="_blank" class="btn btn-primary">
+                    <a href="{{ entry.url }}" target="_blank" class="btn btn-primary">
                         View Details
                     </a>
                 </p>
-            
+
             </li>
         {% endfor %}
     {% endfor %}

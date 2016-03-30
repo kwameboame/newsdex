@@ -7,6 +7,10 @@ admin.site.register(FacebookUser)
 admin.site.register(FacebookPage)
 admin.site.register(FacebookPost)
 admin.site.register(Feed)
-admin.site.register(Word)
-admin.site.register(Tracked_Word)
 admin.site.register(Article)
+
+
+@admin.register(Word)
+class WordAdmin(admin.ModelAdmin):
+    list_display = ('word', 'tracked')
+    search_fields = ['word']  # change this to "search_fields = ['word__icontains']" after going from sqLite
