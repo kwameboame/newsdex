@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,99 +9,99 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-<style type="text/css">
-  .article{
-    list-style: none;
-  }
+    <style type="text/css">
+        .article {
+            list-style: none;
+        }
 
-  .article h2{
-    font-size: 16px;
-  }
+        .article h2 {
+            font-size: 16px;
+        }
 
-  .article img, .article p, .article div{
-    display: none;
-  }
-</style>
+        .article img, .article p, .article div {
+            display: none;
+        }
+    </style>
 
     <title>Ghana News Explorer</title>
 
     <!-- Bootstrap core CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url 'homepage' %}">News Explorer</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'homepage' %}">News Explorer</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="{% url 'homepage' %}">Home</a></li>
-            <li><a href="{% url 'articles_list' %}">Articles</a></li>
-            <li><a href="{% url 'feeds_list' %}">News Feeds</a></li>
-            <li><a href="{% url 'facebook_posts' %}">Facebook Posts</a></li>
-            <li><a href="{% url 'trends' %}">Trends</a></li>
-            <li><a href="{% url 'tracked_words' %}">Tracked Words</a></li>
-          </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'homepage' %}">Home</a></li>
+                <li><a href="{% url 'articles_list' %}">Articles</a></li>
+                <li><a href="{% url 'feeds_list' %}">News Feeds</a></li>
+                <li><a href="{% url 'facebook_posts' %}">Facebook Posts</a></li>
+                <li><a href="{% url 'trends' %}">Trends</a></li>
+                <li><a href="{% url 'tracked_words' %}">Tracked Words</a></li>
+            </ul>
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    {% block content %}
-    {% endblock %}
+{% block content %}
+{% endblock %}
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-    <!-- need it for daterangepicker -->
-    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-     
-    <!-- Include Date Range Picker -->
-    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
-    <script type="text/javascript">
-      $(function() {
+<!-- need it for daterangepicker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+<script type="text/javascript">
+    $(function () {
         $('#daterange').daterangepicker();
-        $('#daterange').on('apply.daterangepicker', function(ev, picker) {
-          ajax_fill(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+        $('#daterange').on('apply.daterangepicker', function (ev, picker) {
+            ajax_fill(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
         });
-        $('.date').click(function(){
-          var endDate = new Date();
-          var startDate = new Date(endDate.getTime() - parseInt($(this).data('delta')) * 24 * 60 * 60 * 1000);
-          ajax_fill(startDate, endDate);
+        $('.date').click(function () {
+            var endDate = new Date();
+            var startDate = new Date(endDate.getTime() - parseInt($(this).data('delta')) * 24 * 60 * 60 * 1000);
+            ajax_fill(startDate, endDate);
         });
-        function ajax_fill(startDate, endDate){
-          $.ajax({
-            url: '/news/ajax_articles',
-            method: 'GET',
-            data:{
-              'date_from': startDate.toString('yyyy-MM-dd'),
-              'date_to': endDate.toString('yyyy-MM-dd')
-            },
-            success: function (data) {
-              if(data.replace(/\s/g,"") == ""){
-                data = '<p>Nothing to show :(</p>';
-              }
-              console.log(data);
-              $('.cycle').html(data);
-            }
-                
-          });
+        function ajax_fill(startDate, endDate) {
+            $.ajax({
+                url: '/news/ajax_articles',
+                method: 'GET',
+                data: {
+                    'date_from': startDate.toString('yyyy-MM-dd'),
+                    'date_to': endDate.toString('yyyy-MM-dd')
+                },
+                success: function (data) {
+                    if (data.replace(/\s/g, "") == "") {
+                        data = '<p>Nothing to show :(</p>';
+                    }
+                    console.log(data);
+                    $('.cycle').html(data);
+                }
+
+            });
         }
-      });
-    </script>
-  </body>
+    });
+</script>
+</body>
 </html>
