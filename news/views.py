@@ -2,6 +2,7 @@ import sys
 import operator
 
 from django.db.models import Q
+from django.db.utils import OperationalError
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -219,6 +220,8 @@ def nltk_all(request):
                     print('Thats new word!')
                 except Word.MultipleObjectsReturned:
                     print('Word "%s" has duplicates!' % word)
+                except OperationalError:
+                    print('Can\'t fetch the word "%s".' % word)
                 try:
                     if not obj.words.filter(word=new_word).exists():
                         obj.words.add(new_word)
