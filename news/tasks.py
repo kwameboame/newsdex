@@ -37,7 +37,13 @@ def parse_feed(feed_urls):
     for url in feed_urls:
         feedData = feedparser.parse(url)
         feedTitle = feedData.feed.title
-        feed = Feed.objects.create(url=url, title=feedTitle)
+        try:
+            feed = Feed.objects.get(url=url)
+        except Feed.DoesNotExist:
+            feed = Feed.objects.create(url=url, title=feedTitle)
+        except Feed.MultipleObjectsReturned:
+            feed = Feed.objects.filter(url=url).last()
+            print('Feed "%s" has duplicates!' % feedTitle)
         print('== Feed is: ==')
         print(feed.title)
         print('-- There are entries in feed: --')
@@ -46,6 +52,8 @@ def parse_feed(feed_urls):
             try:
                 article = Article.objects.get(Q(url=entry.link) | Q(title=entry.title))
                 print('-- Article exist: --')
+            except Article.MultipleObjectsReturned:
+                print('You have duplicate articles. Duplicate: "%s"' % entry.title)
             except Article.DoesNotExist:
                 article = Article()  # we just create empty object
                 article.title = entry.title
@@ -114,7 +122,9 @@ def parse_facebook(pages):
                     try:
                         new_post = FacebookPost.objects.get(post_id=post['id'])
                         print('-- Post exist in db --')
-                    except:
+                    except FacebookPost.MultipleObjectsReturned:
+                        print('You have duplicate posts. Duplicate: "%s"' % post['id'])
+                    except FacebookPost.DoesNotExist:
                         new_post = FacebookPost()
                         new_post.parent_page = page
                         print(post['created_time'])
@@ -138,7 +148,9 @@ def parse_facebook(pages):
                         try:
                             new_comment = FacebookComment.objects.get(comment_id=comment['id'])
                             print('-- Comment exist in db --')
-                        except:
+                        except FacebookComment.MultipleObjectsReturned:
+                            print('You have duplicate comments. Duplicate: "%s"' % comment['id'])
+                        except FacebookComment.DoesNotExist:
                             try:
                                 new_user = FacebookUser.objects.get(user_id=comment['from']['id'])
                                 print('-- User exist in db --')
