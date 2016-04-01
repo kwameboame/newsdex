@@ -86,10 +86,13 @@ def get_by_word_and_date(request):
     except:
         raise Http404('No word sent')
 
-    word = Word.objects.filter(word=word).last()
-    articles = Article.objects.filter(words__word__iregex='^%s$' % word.word)
-    posts = FacebookPost.objects.filter(words__word__iregex='^%s$' % word.word)
-    comments = FacebookComment.objects.filter(words__word__iregex='^%s$' % word.word)
+    try:
+        word = Word.objects.filter(word=word).last()
+        articles = Article.objects.filter(words__word__iregex='^%s$' % word.word)
+        posts = FacebookPost.objects.filter(words__word__iregex='^%s$' % word.word)
+        comments = FacebookComment.objects.filter(words__word__iregex='^%s$' % word.word)
+    except Exception as e:
+        logger.error('Error: %s on word: %s.' % (e, word))
     return render(request, 'news/word.html', locals())
 
 
