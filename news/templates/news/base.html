@@ -48,7 +48,7 @@
                 <li><a href="{% url 'articles_list' %}">Articles</a></li>
                 <li><a href="{% url 'feeds_list' %}">News Feeds</a></li>
                 <li><a href="{% url 'facebook_posts' %}">Facebook Posts</a></li>
-                <li><a href="{% url 'trends' %}">Trends</a></li>
+                <li><a href="{% url 'nltk' %}">Trends</a></li>
                 <li><a href="{% url 'tracked_words' %}">Tracked Words</a></li>
             </ul>
         </div>
@@ -76,16 +76,24 @@
     $(function () {
         $('#daterange').daterangepicker();
         $('#daterange').on('apply.daterangepicker', function (ev, picker) {
-            ajax_fill(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+            if ($(this).parent().data('name') == 'nltk') {
+                ajax_fill('/news/ajax_nltk', picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+            } else {
+                ajax_fill('/news/ajax_articles', picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+            }
         });
         $('.date').click(function () {
             var endDate = new Date();
             var startDate = new Date(endDate.getTime() - parseInt($(this).data('delta')) * 24 * 60 * 60 * 1000);
-            ajax_fill(startDate, endDate);
+            if ($(this).parent().data('name') == 'nltk') {
+                ajax_fill('/news/ajax_nltk', startDate, endDate);
+            } else {
+                ajax_fill('/news/ajax_articles', startDate, endDate);
+            }
         });
-        function ajax_fill(startDate, endDate) {
+        function ajax_fill(url, startDate, endDate) {
             $.ajax({
-                url: '/news/ajax_articles',
+                url: url,
                 method: 'GET',
                 data: {
                     'date_from': startDate.toString('yyyy-MM-dd'),

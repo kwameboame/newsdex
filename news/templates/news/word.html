@@ -13,14 +13,20 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <div>
-                    <a href="#" class="btn btn-default date" data-delta="7">7 days</a>
-                    <a href="#" class="btn btn-default date" data-delta="30">30 days</a>
-                    <a href="#" class="btn btn-default date" data-delta="180">6 months</a>
-                    <a href="#" id="daterange" class="btn btn-default">Pick range</a>
-                </div>
+                <h2>All for word '{{ word.0.word }}'</h2>
                 <div class="cycle">
-                    {% include "news/articles_cycle.html" %}
+                    <h3>Articles</h3>
+                    {% for article in articles %}
+                        <li><a href="{{ article.url }}">{{ article.title }}</a></li>
+                    {% endfor %}
+                    <h3>Facebook posts</h3>
+                    {% for post in posts %}
+                        <li>{{ post.text }}</li>
+                    {% endfor %}
+                    <h3>Facebook comments</h3>
+                    {% for comment in comments %}
+                        <li>{{ comment.message }}</li>
+                    {% endfor %}
                 </div>
             </div>
         </div>
