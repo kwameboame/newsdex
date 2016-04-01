@@ -14,46 +14,11 @@
         <div class="row">
             <div class="col-md-6">
                 {% if tracked_words %}
-                    {% for trackedword in tracked_words %}
-                        <ul>
-                            <li class="article" data-toggle="collapse" data-target="#{{ trackedword }}-related">
-                                <h2><a href="#">{{ trackedword.word }}</a></h2>
-                            </li>
-
-                            <ul id="{{ trackedword }}-related" class="collapse">
-                                <li class="article" data-toggle="collapse" data-target="#{{ trackedword }}-related-articles">
-                                    <h2><a href="#">Articles</a></h2>
-                                </li>
-                                <ul id="{{ trackedword }}-related-articles" class="collapse">
-                                    {% for article in trackedword.article_set.all %}
-                                        <li class="article">
-                                            <h2><a href="{{ article.url }}" target="_blank">{{ article }}</a></h2>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                                <li class="article" data-toggle="collapse" data-target="#{{ trackedword }}-related-facebookposts">
-                                    <h2><a href="#">Facebook Posts</a></h2>
-                                </li>
-                                <ul id="{{ trackedword }}-related-facebookposts" class="collapse">
-                                    {% for facebookpost in trackedword.facebookpost_set.all %}
-                                        <li class="article">
-                                            <h2><a href="#" target="_blank">{{ facebookpost.text }}</a></h2>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                                <li class="article" data-toggle="collapse" data-target="#{{ trackedword }}-related-facebookcomments">
-                                    <h2><a href="#">Facebook Comments</a></h2>
-                                </li>
-                                <ul id="{{ trackedword }}-related-facebookcomments" class="collapse">
-                                    {% for facebookcomment in trackedword.facebookcomment_set.all %}
-                                        <li class="article">
-                                            <h2><a href="#" target="_blank">{{ facebookcomment.message }}</a></h2>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </ul>
-                        </ul>
-                    {% endfor %}
+                    <ul>
+                        {% for trackedword in tracked_words %}
+                            <li class="item"><a href="/news/word?word={{ trackedword }}">{{ trackedword }}</a></li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
             </div>
         </div>

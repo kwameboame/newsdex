@@ -1,6 +1,5 @@
 import os
 import django
-from datetime import timedelta
 from celery import Celery
 from django.conf import settings
 
@@ -11,8 +10,6 @@ app = Celery('news')
 
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
-
-from celery.schedules import crontab
 
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 # CELERYBEAT_SCHEDULE = {

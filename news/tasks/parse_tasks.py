@@ -1,39 +1,27 @@
-from urllib.error import HTTPError
-from celery.decorators import task
-import requests
-import feedparser
-from django.db.models import Q
-
-from .models import *
+# coding=utf-8
 import datetime
-from readability.readability import Document
+import logging
 import re
+from urllib.error import HTTPError
+
 import facebook
+import feedparser
+import requests
+from celery.task import task
+from django.db.models import Q
+from readability import Document
 
-FACEBOOK_CLIENT_ID = '105323143198945'
-FACEBOOK_CLIENT_SECRET = 'e10beb3dc3a388480927d29493168545'
+from news.models import Feed, Article, FacebookPost, FacebookComment, FacebookUser, FacebookPage
+from news.tasks.utils import get_access_token, FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET
 
-
-def get_access_token(client_id, client_secret):
-    url = 'https://graph.facebook.com/oauth/access_token'
-    params = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'grant_type': 'client_credentials',
-
-    }
-    req = requests.get(url, params=params)
-    s = req.text.split('=')
-    if (s[0] == 'access_token') and (len(s) == 2):
-        return s[1]
-    else:
-        return None
+__author__ = 'ilov3'
+logger = logging.getLogger(__name__)
 
 
 def parse_feed(feed_urls):
-    print('== Let try to parse all of feeds ==')
-    print('There are count feeds:')
-    print(len(feed_urls))
+    logger.debug('== Let try to parse all of feeds ==')
+    logger.debug('There are count feeds:')
+    logger.debug(len(feed_urls))
     for url in feed_urls:
         feedData = feedparser.parse(url)
         feedTitle = feedData.feed.title
@@ -43,17 +31,17 @@ def parse_feed(feed_urls):
             feed = Feed.objects.create(url=url, title=feedTitle)
         except Feed.MultipleObjectsReturned:
             feed = Feed.objects.filter(url=url).last()
-            print('Feed "%s" has duplicates!' % feedTitle)
-        print('== Feed is: ==')
-        print(feed.title)
-        print('-- There are entries in feed: --')
-        print(len(feedData.entries))
+            logger.warn('Feed "%s" has duplicates!' % feedTitle)
+        logger.debug('== Feed is: ==')
+        logger.debug(feed.title)
+        logger.debug('-- There are entries in feed: --')
+        logger.debug(len(feedData.entries))
         for entry in feedData.entries:
             try:
                 article = Article.objects.get(Q(url=entry.link) | Q(title=entry.title))
-                print('-- Article exist: --')
+                logger.info('-- Article exist: --')
             except Article.MultipleObjectsReturned:
-                print('You have duplicate articles. Duplicate: "%s"' % entry.title)
+                logger.warn('You have duplicate articles. Duplicate: "%s"' % entry.title)
             except Article.DoesNotExist:
                 article = Article()  # we just create empty object
                 article.title = entry.title
@@ -79,55 +67,55 @@ def parse_feed(feed_urls):
 
                 except HTTPError as inst:
                     output = format(inst)
-                    print('-- Error: --')
-                    print(output)
-                    print('-- Failed to add article: --')
+                    logger.error('-- Error: --')
+                    logger.error(output)
+                    logger.error('-- Failed to add article: --')
                 else:
-                    print('-- Article exist: --')
+                    logger.debug('-- Article exist: --')
             try:
-                print(article.title)
-            except:
-                print(':( Unable to output article title')
+                logger.debug(article.title)
+            except Exception as e:
+                logger.error(e)
 
 
 def parse_facebook(pages):
     access_token = get_access_token(FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET)
     if access_token is not None:
-        print('== Let try to parse all of facebook links ==')
+        logger.debug('== Let try to parse all of facebook links ==')
         for page in pages:
-            print('== Parse page: ==')
+            logger.debug('== Parse page: ==')
             try:
-                print(page.title)
-            except:
-                print('Unavaliable to print page.title data')
+                logger.debug(page.title)
+            except Exception as e:
+                logger.debug('Unavaliable to print page.title data. %s' % e)
             try:
                 graph = facebook.GraphAPI(access_token=access_token, version='2.5')
                 profile = graph.get_object(page.url)
                 try:
-                    print(profile)
-                except:
-                    print('Unavaliable to print profile data')
+                    logger.debug(profile)
+                except Exception as e:
+                    print('Unavaliable to print profile data. %s' % e)
                 posts = graph.get_connections(profile['id'], 'posts')
-                print('-- Get data: --')
+                logger.debug('-- Get data: --')
                 # try:
                 #     print(posts)
                 # except:
                 #     print('Unavaliable to print posts data')
                 for post in posts['data']:
-                    print('-- Here is post: --')
+                    logger.debug('-- Here is post: --')
                     try:
-                        print(post)
-                    except:
-                        print('Unavaliable to print post data')
+                        logger.debug(post)
+                    except Exception as e:
+                        print('Unavaliable to print post data. %s' % e)
                     try:
                         new_post = FacebookPost.objects.get(post_id=post['id'])
-                        print('-- Post exist in db --')
+                        logger.debug('-- Post exist in db --')
                     except FacebookPost.MultipleObjectsReturned:
-                        print('You have duplicate posts. Duplicate: "%s"' % post['id'])
+                        logger.warn('You have duplicate posts. Duplicate: "%s"' % post['id'])
                     except FacebookPost.DoesNotExist:
                         new_post = FacebookPost()
                         new_post.parent_page = page
-                        print(post['created_time'])
+                        logger.debug(post['created_time'])
                         new_post.created_time = datetime.datetime.strptime((post['created_time']).split("+")[0], '%Y-%m-%dT%H:%M:%S')
                         if 'message' in post:
                             new_post.text = post['message']
@@ -135,31 +123,33 @@ def parse_facebook(pages):
                             new_post.text = post['story']
                         new_post.post_id = post['id']
                         new_post.save()
-                        print('-- Post saved in db --')
+                        logger.debug('-- Post saved in db --')
 
-                    print('## Comments data ##')
+                    logger.info('## Comments data ##')
                     comments = graph.get_connections(id=post['id'], connection_name='comments')
                     for comment in comments['data']:
-                        print('-- Here is comment: --')
+                        logger.debug('-- Here is comment: --')
                         try:
-                            print(comment)
-                        except:
-                            print('Unavaliable to print comment data')
+                            logger.debug(comment)
+                        except Exception as e:
+                            logger.debug('Unavaliable to print comment data. %s' % e)
                         try:
                             new_comment = FacebookComment.objects.get(comment_id=comment['id'])
-                            print('-- Comment exist in db --')
+                            logger.debug('-- Comment exist in db --')
                         except FacebookComment.MultipleObjectsReturned:
-                            print('You have duplicate comments. Duplicate: "%s"' % comment['id'])
+                            logger.debug('You have duplicate comments. Duplicate: "%s"' % comment['id'])
                         except FacebookComment.DoesNotExist:
                             try:
                                 new_user = FacebookUser.objects.get(user_id=comment['from']['id'])
-                                print('-- User exist in db --')
-                            except:
+                                logger.debug('-- User exist in db --')
+                            except FacebookUser.MultipleObjectsReturned:
+                                logger.debug('You have duplicate fb users. Duplicate: "%s"' % comment['from']['name'])
+                            except FacebookUser.DoesNotExist:
                                 new_user = FacebookUser()
                                 new_user.user_id = comment['from']['id']
                                 new_user.name = comment['from']['name']
                                 new_user.save()
-                                print('-- New user added to db --')
+                                logger.debug('-- New user added to db --')
                             new_comment = FacebookComment()
                             new_comment.post_id = new_post
                             new_comment.user_id = new_user
@@ -170,12 +160,11 @@ def parse_facebook(pages):
                                 new_comment.message = comment['story']
                             new_comment.comment_id = comment['id']
                             new_comment.save()
-                            print('-- Comment saved in db --')
-            except:
-                print('-- Something went wrong :( --')
+                            logger.debug('-- Comment saved in db --')
+            except Exception as e:
+                print('Error parsing fb. %s' % e)
     else:
-        print('-- Access token is None --')
-        pass
+        logger.warn('-- Access token is None --')
 
 
 @task
@@ -201,4 +190,4 @@ def parse_all_task(feed_url=None, page=None, *args):
     parse_feed_task(feed_url)
     parse_facebook_task(page)
 
-    print('== Done ==')
+    logger.debug('== Done ==')
