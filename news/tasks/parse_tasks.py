@@ -7,7 +7,7 @@ from urllib.error import HTTPError
 import facebook
 import feedparser
 import requests
-from celery.task import task
+from celery import Task
 from django.db.models import Q
 from readability import Document
 
@@ -59,7 +59,7 @@ def parse_feed(feed_urls):
                     d = datetime.datetime(*(entry.published_parsed[0:6]))
                     dateString = d.strftime('%Y-%m-%d %H:%M:%S')
 
-                    article.publication_date = dateString
+                    article.created_time = dateString
                     article.feed = feed
                     article.save()
 
@@ -167,27 +167,26 @@ def parse_facebook(pages):
         logger.warn('-- Access token is None --')
 
 
-@task
-def parse_feed_task(feed_url=None):
-    if feed_url:
-        parse_feed([feed_url])
-    else:
-        feed_urls = [item[0] for item in Feed.objects.filter(is_active=True).values_list('url')]
-        parse_feed(feed_urls)
+class ParseFeedTask(Task):
+    def run(self, feed_url=None):
+        if feed_url:
+            parse_feed([feed_url])
+        else:
+            feed_urls = [item[0] for item in Feed.objects.filter(is_active=True).values_list('url')]
+            parse_feed(feed_urls)
 
 
-@task
-def parse_facebook_task(page=None):
-    if page:
-        parse_facebook([page])
-    else:
-        pages = FacebookPage.objects.filter(is_active=True)
-        parse_facebook(pages)
+class ParseFacebookTask(Task):
+    def run(self, page=None):
+        if page:
+            parse_facebook([page])
+        else:
+            pages = FacebookPage.objects.filter(is_active=True)
+            parse_facebook(pages)
 
 
-@task
-def parse_all_task(feed_url=None, page=None, *args):
-    parse_feed_task(feed_url)
-    parse_facebook_task(page)
-
-    logger.debug('== Done ==')
+class ParseAllTask(Task):
+    def run(self, feed_url=None, page=None, *args):
+        ParseFacebookTask()()
+        ParseFeedTask()()
+        logger.debug('== Done ==')

@@ -1,6 +1,6 @@
 # coding=utf-8
 import logging
-from .parse_tasks import parse_all_task, parse_feed_task, parse_facebook_task
+from .parse_tasks import ParseAllTask, ParseFeedTask, ParseFacebookTask
 from .nltk_tasks import nltk_all_task
 
 __author__ = 'ilov3'

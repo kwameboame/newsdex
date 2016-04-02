@@ -21,9 +21,9 @@
                             {% if kind == 'article' %}
                                 <li><a href="{{ item.url }}">{{ item.title }}</a></li>
                             {% elif kind == 'post' %}
-                                <li>{{ item.text }}</li>
+                                <li>{{ item.text }}<span>{{ item.created_time }}</span></li>
                             {% elif kind == 'comment' %}
-                                <li>{{ item.message }}</li>
+                                <li>{{ item.message }}<span>{{ item.created_time }}</span></li>
                             {% endif %}
                         {% endfor %}
                     {% else %}

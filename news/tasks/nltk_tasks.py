@@ -24,7 +24,7 @@ def nltk_all_task():
                 word, pos = word['word']
                 logger.debug(word)
                 try:
-                    new_word = Word.objects.get(Q(word__iregex='^%s$' % word), Q(pos=pos) | Q(tracked=True))  # => word='^word$' AND (pos=pos OR tracked=True)
+                    new_word = Word.objects.get(Q(word__iexact=word), Q(pos=pos) | Q(tracked=True))  # => word='^word$' AND (pos=pos OR tracked=True)
                     if new_word.tracked and not obj.words.filter(word=new_word).exists():
                         obj.words.add(new_word)
                         obj.save()

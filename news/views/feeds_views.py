@@ -7,14 +7,14 @@ from django.shortcuts import render, redirect
 
 from news.forms import FeedForm
 from news.models import Article, Feed
-from news.tasks import parse_all_task
+from news.tasks import ParseAllTask
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
 
 
 def articles_list(request):
-    articles = Article.objects.all().order_by('-publication_date')
+    articles = Article.objects.all().order_by('-created_time')
     rows = [articles[x:x + 1] for x in range(0, len(articles), 1)]
     # return render(request, 'news/articles_list.html', {'rows': rows})
 
@@ -48,7 +48,7 @@ def ajax_articles(request):
             date_to = datetime.datetime.strptime(request.GET['date_to'], "%Y-%m-%d").replace(hour=23, minute=59, second=59)
         except:
             date_to = datetime.date.today().replace(hour=23, minute=59, second=59)
-        articles = Article.objects.filter(publication_date__range=[date_from, date_to]).order_by('-publication_date')
+        articles = Article.objects.filter(created_time__range=[date_from, date_to]).order_by('-created_time')
         rows = [articles[x:x + 1] for x in range(0, len(articles), 1)]
 
     return render(request, 'news/articles_cycle.html', locals())  # {'rows' : rows})
@@ -66,13 +66,13 @@ def new_feed(request):
             url = request.POST.get('url')
             existingFeed = Feed.objects.filter(url=url)
             if len(existingFeed) == 0:
-                parse_all_task.delay(feed_url=url)
-            return redirect('news.views.feeds_list')
+                ParseAllTask().delay(feed_url=url)
+            return redirect('feeds_list')
     else:
         form = FeedForm()
     return render(request, 'news/new_feed.html', {'form': form})
 
 
 def parse_manual(request):
-    parse_all_task.delay()
+    ParseAllTask().delay()
     return redirect('articles_list')

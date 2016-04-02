@@ -2,28 +2,37 @@
     {% if articles_words %}
         <h2>Articles trendy words</h2>
         <ul>
-        {% for word in articles_words %}
-            <li class="item"><a href="/news/word?kind=article&word={{word.0}}">{{word.0}}</a></li>
-    
-        {% endfor %}
+            {% for word in articles_words %}
+                <li class="item">
+                    <a href="/news/word?date_from={{ date_from }}&date_to={{ date_to }}&kind=article&word={{ word.iword }}">
+                        {{ word.iword }} {{ word.article_count }}
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
     {% endif %}
     {% if posts_words %}
         <h2>Facebook posts trendy words</h2>
         <ul>
-        {% for word in posts_words %}
-            <li class="item"><a href="/news/word?kind=post&word={{word.0}}">{{word.0}}</a></li>
-    
-        {% endfor %}
+            {% for word in posts_words %}
+                <li class="item">
+                    <a href="/news/word?date_from={{ date_from }}&date_to={{ date_to }}&kind=post&word={{ word.iword }}">
+                        {{ word.iword }} {{ word.facebookpost_count }}
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
     {% endif %}
     {% if comments_words %}
         <h2>Facebook comments trendy words</h2>
         <ul>
-        {% for word in comments_words %}
-            <li class="item"><a href="/news/word?kind=comment&word={{word.0}}">{{word.0}}</a></li>
-    
-        {% endfor %}
+            {% for word in comments_words %}
+                <li class="item">
+                    <a href="/news/word?date_from={{ date_from }}&date_to={{ date_to }}&kind=comment&word={{ word.iword }}">
+                        {{ word.iword }} {{ word.facebookcomment_count }}
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
     {% endif %}
 {% endblock %}

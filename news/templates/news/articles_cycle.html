@@ -7,7 +7,7 @@
                         {{ entry.title }}
                     </a>
                 </h2>
-                <span>{{ entry.publication_date | safe }}</span>
+                <span>{{ entry.created_time | safe }}</span>
                 <p>{{ entry.description | safe }}</p>
                 <p>
                     <a href="{{ entry.url }}" target="_blank" class="btn btn-primary">

@@ -1,8 +1,47 @@
 import datetime
 from django.db import models
 
-
 # Create your models here.
+from django.db.models import Count, Case, When, F, Func
+
+
+class WordQueryset(models.QuerySet):
+    def ignore_case(self):
+        return self.annotate(iword=Func(F('word'), function='LOWER'))
+
+    def get_top(self, field, date_from, date_to, count):
+        """
+        Returns top trending words (ignore case search) for given range of dates
+        :param count: offset
+        :type count: int
+        :param date_to:
+        :type date_to:
+        :param date_from:
+        :type date_from:
+        :param field: one of the following: article | facebookpost | facebookcomment
+        :type field: str
+        """
+        date_from_lookup = "%s__created_time__date__gte" % field
+        date_to_lookup = "%s__created_time__date__lte" % field
+        count_lookup = "%s_count" % field
+        return self \
+                   .filter(**{date_from_lookup: date_from, date_to_lookup: date_to}) \
+                   .ignore_case() \
+                   .values('iword') \
+                   .annotate(**{count_lookup: Count(Case(When(**{date_from_lookup: date_from, date_to_lookup: date_to, 'then': F(field)})), distinct=True)}) \
+                   .order_by("-%s" % count_lookup)[:count]
+
+    def tracked(self):
+        result = []
+        tracked = self.filter(tracked=True).ignore_case()
+        for word in tracked:
+            result.append((word.iword, self.ignore_case()
+                           .filter(iword=word.iword)
+                           .aggregate(articles_count=Count('article', distinct=True),
+                                      posts_count=Count('facebookpost', distinct=True),
+                                      comments_count=Count('facebookcomment', distinct=True))))
+        return result
+
 
 class Feed(models.Model):
     title = models.CharField(max_length=200)
@@ -18,6 +57,7 @@ class Word(models.Model):
     pos = models.CharField(max_length=20, blank=True, null=True)
     tracked = models.BooleanField(default=False)
     created_time = models.DateTimeField(default=datetime.datetime.now)
+    objects = WordQueryset.as_manager()
 
     def __str__(self):
         return self.word
@@ -33,7 +73,7 @@ class Article(models.Model):
     url = models.URLField()
     description = models.TextField()
     content = models.TextField(default="")
-    publication_date = models.DateTimeField()
+    created_time = models.DateTimeField()
     words = models.ManyToManyField(Word)
 
     def __str__(self):
