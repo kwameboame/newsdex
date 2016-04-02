@@ -81,19 +81,32 @@ def ajax_nltk(request):
 
 
 def get_by_word_and_date(request):
+    context = {}
     try:
         word = request.GET['word']
+        context['word'] = word
     except:
         raise Http404('No word sent')
 
     try:
+        kinds = {
+            'article': {'model': Article, 'verbose_name': 'Articles'},
+            'post': {'model': FacebookPost, 'verbose_name': 'Facebook posts'},
+            'comment': {'model': FacebookComment, 'verbose_name': 'Facebook comments'}
+        }
         word = Word.objects.filter(word=word).last()
-        articles = Article.objects.filter(words__word__iregex='^%s$' % word.word)
-        posts = FacebookPost.objects.filter(words__word__iregex='^%s$' % word.word)
-        comments = FacebookComment.objects.filter(words__word__iregex='^%s$' % word.word)
+        kind = request.GET.get('kind')
+        if kind in kinds:
+            context['kind'] = kind
+            context['kind_verbose'] = kinds[kind]['verbose_name']
+            context['items'] = kinds[kind]['model'].objects.filter(words__word__iregex='^%s$' % word.word)
+        else:
+            context['articles'] = Article.objects.filter(words__word__iregex='^%s$' % word.word)
+            context['posts'] = FacebookPost.objects.filter(words__word__iregex='^%s$' % word.word)
+            context['comments'] = FacebookComment.objects.filter(words__word__iregex='^%s$' % word.word)
     except Exception as e:
         logger.error('Error: %s on word: %s.' % (e, word))
-    return render(request, 'news/word.html', locals())
+    return render(request, 'news/word.html', context=context)
 
 
 class TrackedWordView(generic.ListView):
