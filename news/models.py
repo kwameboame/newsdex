@@ -31,46 +31,56 @@ class WordQueryset(models.QuerySet):
                    .annotate(**{count_lookup: Count(Case(When(**{date_from_lookup: date_from, date_to_lookup: date_to, 'then': F(field)})), distinct=True)}) \
                    .order_by("-%s" % count_lookup)[:count]
 
+
+class TagQuerySet(models.QuerySet):
     def tracked(self):
-        result = []
-        tracked = self.filter(tracked=True).ignore_case()
-        for word in tracked:
-            result.append((word.iword, self.ignore_case()
-                           .filter(iword=word.iword)
-                           .aggregate(articles_count=Count('article', distinct=True),
-                                      posts_count=Count('facebookpost', distinct=True),
-                                      comments_count=Count('facebookcomment', distinct=True))))
-        return result
+        return self.filter(tracked=True).annotate(
+                articles_count=Count('word__article', distinct=True),
+                posts_count=Count('word__facebookpost', distinct=True),
+                comments_count=Count('word__facebookcomment', distinct=True),
+        )
 
 
 class Feed(models.Model):
     title = models.CharField(max_length=200)
-    url = models.URLField()
+    url = models.URLField(unique=True)
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
 
 
+class Tag(models.Model):
+    iword = models.CharField(max_length=200, unique=True)
+    tracked = models.BooleanField(default=False)
+    objects = TagQuerySet.as_manager()
+
+    def __str__(self):
+        return self.iword
+
+    class Meta:
+        ordering = ['-tracked', 'iword']
+
+
 class Word(models.Model):
     word = models.CharField(max_length=200)
     pos = models.CharField(max_length=20, blank=True, null=True)
-    tracked = models.BooleanField(default=False)
     created_time = models.DateTimeField(default=datetime.datetime.now)
+    tag = models.ForeignKey(Tag)
     objects = WordQueryset.as_manager()
 
     def __str__(self):
         return self.word
 
     class Meta:
-        ordering = ['-tracked', 'word']
+        ordering = ['word']
         unique_together = ("word", "pos")
 
 
 class Article(models.Model):
     feed = models.ForeignKey(Feed)
-    title = models.CharField(max_length=200)
-    url = models.URLField()
+    title = models.CharField(max_length=200, unique=True)
+    url = models.URLField(unique=True)
     description = models.TextField()
     content = models.TextField(default="")
     created_time = models.DateTimeField()
@@ -93,7 +103,7 @@ class FacebookPost(models.Model):
     parent_page = models.ForeignKey(FacebookPage)
     created_time = models.DateTimeField()
     text = models.TextField()
-    post_id = models.CharField(max_length=255)
+    post_id = models.CharField(max_length=255, unique=True)
     words = models.ManyToManyField(Word)
 
     def __str__(self):
@@ -101,7 +111,7 @@ class FacebookPost(models.Model):
 
 
 class FacebookUser(models.Model):
-    user_id = models.CharField(max_length=255)
+    user_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -113,7 +123,7 @@ class FacebookComment(models.Model):
     user_id = models.ForeignKey(FacebookUser)
     created_time = models.DateTimeField()
     message = models.TextField()
-    comment_id = models.CharField(max_length=255)
+    comment_id = models.CharField(max_length=255, unique=True)
     words = models.ManyToManyField(Word)
 
     def __str__(self):

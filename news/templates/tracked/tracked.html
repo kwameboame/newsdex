@@ -16,8 +16,8 @@
                 {% if tracked_words %}
                     <ul>
                         {% for trackedword in tracked_words %}
-                            <li class="item"><a href="/news/word?word={{ trackedword.0 }}">{{ trackedword.0 }}</a></li>
-                            <span>{{ trackedword.1.articles_count }} articles, {{ trackedword.1.posts_count }} posts, {{ trackedword.1.comments_count }} comments</span>
+                            <li class="item"><a href="/news/word?word={{ trackedword }}">{{ trackedword }}</a></li>
+                            <span>{{ trackedword.articles_count }} articles, {{ trackedword.posts_count }} posts, {{ trackedword.comments_count }} comments</span>
                         {% endfor %}
                     </ul>
                 {% endif %}
