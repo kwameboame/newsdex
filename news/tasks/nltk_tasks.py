@@ -52,3 +52,5 @@ def nltk_all_task():
     add_words(articles, 'title', 'content')
     add_words(posts, 'post_id', 'text')
     add_words(comments, 'comment_id', 'message')
+
+    logger.debug('Finish!')

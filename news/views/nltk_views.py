@@ -46,9 +46,9 @@ def ajax_nltk(request):
     context['date_from'] = date_from.strftime("%Y-%m-%d")
     context['date_to'] = date_to.strftime("%Y-%m-%d")
 
-    context['articles_words'] = Word.objects.get_top('article', date_from, date_to, 15)
-    context['posts_words'] = Word.objects.get_top('facebookpost', date_from, date_to, 15)
-    context['comments_words'] = Word.objects.get_top('facebookcomment', date_from, date_to, 15)
+    context['articles_words'] = Tag.objects.get_top('article', date_from, date_to, 15)
+    context['posts_words'] = Tag.objects.get_top('facebookpost', date_from, date_to, 15)
+    context['comments_words'] = Tag.objects.get_top('facebookcomment', date_from, date_to, 15)
 
     return render(request, 'news/nltk_cycle.html', context=context)
 

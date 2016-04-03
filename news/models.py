@@ -2,12 +2,16 @@ import datetime
 from django.db import models
 
 # Create your models here.
-from django.db.models import Count, Case, When, F, Func
+from django.db.models import Count, Case, When, F
 
 
-class WordQueryset(models.QuerySet):
-    def ignore_case(self):
-        return self.annotate(iword=Func(F('word'), function='LOWER'))
+class TagQuerySet(models.QuerySet):
+    def tracked(self):
+        return self.filter(tracked=True).annotate(
+                articles_count=Count('word__article', distinct=True),
+                posts_count=Count('word__facebookpost', distinct=True),
+                comments_count=Count('word__facebookcomment', distinct=True),
+        )
 
     def get_top(self, field, date_from, date_to, count):
         """
@@ -21,24 +25,13 @@ class WordQueryset(models.QuerySet):
         :param field: one of the following: article | facebookpost | facebookcomment
         :type field: str
         """
-        date_from_lookup = "%s__created_time__date__gte" % field
-        date_to_lookup = "%s__created_time__date__lte" % field
+        date_from_lookup = "word__%s__created_time__date__gte" % field
+        date_to_lookup = "word__%s__created_time__date__lte" % field
         count_lookup = "%s_count" % field
         return self \
                    .filter(**{date_from_lookup: date_from, date_to_lookup: date_to}) \
-                   .ignore_case() \
-                   .values('iword') \
-                   .annotate(**{count_lookup: Count(Case(When(**{date_from_lookup: date_from, date_to_lookup: date_to, 'then': F(field)})), distinct=True)}) \
+                   .annotate(**{count_lookup: Count(Case(When(**{date_from_lookup: date_from, date_to_lookup: date_to, 'then': F('word__%s' % field)})), distinct=True)}) \
                    .order_by("-%s" % count_lookup)[:count]
-
-
-class TagQuerySet(models.QuerySet):
-    def tracked(self):
-        return self.filter(tracked=True).annotate(
-                articles_count=Count('word__article', distinct=True),
-                posts_count=Count('word__facebookpost', distinct=True),
-                comments_count=Count('word__facebookcomment', distinct=True),
-        )
 
 
 class Feed(models.Model):
@@ -67,7 +60,6 @@ class Word(models.Model):
     pos = models.CharField(max_length=20, blank=True, null=True)
     created_time = models.DateTimeField(default=datetime.datetime.now)
     tag = models.ForeignKey(Tag)
-    objects = WordQueryset.as_manager()
 
     def __str__(self):
         return self.word
