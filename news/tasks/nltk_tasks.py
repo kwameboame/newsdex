@@ -3,9 +3,8 @@ import logging
 
 from celery.task import task
 from django.db import OperationalError
-from django.db.models import Q
 
-from news.models import Word, Article, FacebookPost, FacebookComment
+from news.models import Word, Article, FacebookPost, FacebookComment, Tag
 from .utils import get_most_common_words
 
 __author__ = 'ilov3'
@@ -24,14 +23,12 @@ def nltk_all_task():
                 word, pos = word['word']
                 logger.debug(word)
                 try:
-                    new_word = Word.objects.get(Q(word__iregex='^%s$' % word), Q(pos=pos) | Q(tracked=True))  # => word='^word$' AND (pos=pos OR tracked=True)
-                    if new_word.tracked and not obj.words.filter(word=new_word).exists():
-                        obj.words.add(new_word)
-                        obj.save()
-                        logger.debug('Tracked word "%s" added to %s' % (word, obj._meta.model_name))
+                    new_word = Word.objects.get(word=word, pos=pos)
                     logger.debug('Word exists in db')
                 except Word.DoesNotExist:  # lets specify our exception
-                    new_word = Word(word=word, pos=pos)
+                    iword = word.lower()
+                    new_tag, created = Tag.objects.get_or_create(iword=iword)
+                    new_word = Word(word=word, pos=pos, tag=new_tag)
                     new_word.save()
                     logger.debug('Thats new word!')
                 except Word.MultipleObjectsReturned:
@@ -55,3 +52,5 @@ def nltk_all_task():
     add_words(articles, 'title', 'content')
     add_words(posts, 'post_id', 'text')
     add_words(comments, 'comment_id', 'message')
+
+    logger.debug('Finish!')

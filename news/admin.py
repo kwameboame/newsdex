@@ -12,5 +12,11 @@ admin.site.register(Article)
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
-    list_display = ('word', 'tracked')
+    list_display = ('word',)
     search_fields = ['word']  # change this to "search_fields = ['word__icontains']" after going from sqLite
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('iword', 'tracked')
+    search_fields = ['iword']  # change this to "search_fields = ['iword__icontains']" after going from sqLite
