@@ -67,18 +67,19 @@ def get_by_word_and_date(request):
             'post': {'model': FacebookPost, 'verbose_name': 'Facebook posts'},
             'comment': {'model': FacebookComment, 'verbose_name': 'Facebook comments'}
         }
-        word = Word.objects.filter(word__iexact=word).last()
+        tag = Tag.objects.get(iword=word.lower())
+        word_set = tag.word_set.all()
         kind = request.GET.get('kind')
         if kind in kinds:
             date_from = request.GET.get('date_from')
             date_to = request.GET.get('date_to')
             context['kind'] = kind
             context['kind_verbose'] = kinds[kind]['verbose_name']
-            context['items'] = kinds[kind]['model'].objects.filter(created_time__date__gte=date_from, created_time__date__lte=date_to, words__word__iexact=word)
+            context['items'] = kinds[kind]['model'].objects.filter(created_time__date__gte=date_from, created_time__date__lte=date_to, words__in=word_set)
         else:
-            context['articles'] = Article.objects.filter(words__word__iexact=word.word)
-            context['posts'] = FacebookPost.objects.filter(words__word__iexact=word.word)
-            context['comments'] = FacebookComment.objects.filter(words__word__iexact=word.word)
+            context['articles'] = Article.objects.filter(words__in=word_set)
+            context['posts'] = FacebookPost.objects.filter(words__in=word_set)
+            context['comments'] = FacebookComment.objects.filter(words__in=word_set)
     except Exception as e:
         logger.error('Error: %s on word: %s.' % (e, word))
     return render(request, 'news/word.html', context=context)

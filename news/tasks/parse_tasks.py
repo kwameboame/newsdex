@@ -187,6 +187,6 @@ class ParseFacebookTask(Task):
 
 class ParseAllTask(Task):
     def run(self, feed_url=None, page=None, *args):
-        ParseFacebookTask()()
-        ParseFeedTask()()
+        ParseFacebookTask()(page=page)
+        ParseFeedTask()(feed_url=feed_url)
         logger.debug('== Done ==')
