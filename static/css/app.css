@@ -1,0 +1,35 @@
+body{
+    background: #F0F5F9 !important;
+}
+
+.navbar-inverse{
+    background: #3F51B5 !important;
+    color: #fff !important;
+    border-bottom: none !important;
+}
+
+.navbar-inverse a{
+    color: #fff !important;
+}
+
+.jumbotron{
+    background: #fff !important;
+    color: #999 !important;
+    padding: 80px 0 40px !important;
+}
+
+.jumbotron h1{
+    font-size: 36px !important;
+}
+
+.article {
+    list-style: none;
+}
+
+.article h2 {
+    font-size: 16px;
+}
+
+.article img, .article p, .article div {
+    display: none;
+}

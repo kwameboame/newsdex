@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+{% load staticfiles %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,22 +9,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
 
-    <style type="text/css">
-        .article {
-            list-style: none;
-        }
-
-        .article h2 {
-            font-size: 16px;
-        }
-
-        .article img, .article p, .article div {
-            display: none;
-        }
-    </style>
-
-    <title>Ghana News Explorer</title>
+    <title>CustDex</title>
 
     <!-- Bootstrap core CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
