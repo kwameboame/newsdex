@@ -1,35 +1,73 @@
 body{
-    background: #F0F5F9 !important;
+    background: #f5f7f8 !important;
 }
 
 .navbar-inverse{
-    background: #3F51B5 !important;
+    background: #fff !important;
     color: #fff !important;
     border-bottom: none !important;
 }
 
 .navbar-inverse a{
-    color: #fff !important;
+    color: #000 !important;
+    text-transform: uppercase !important;
+    font-size: 12px;
+    font-weight: bold;
 }
 
+.navbar-brand{
+    padding-top: 10px !important;
+}
+.card-heading h3{
+    background-color: #6B74AF !important;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+}
 .jumbotron{
-    background: #fff !important;
-    color: #999 !important;
-    padding: 80px 0 40px !important;
+    background: #9AA0D1 !important;
+    color: #fff !important;
+    padding: 100px 0 60px !important;
 }
-
+.period .btn{
+    background: #FFECB3 !important;
+    border: 1px solid #FFDF8C !important;
+}
+.date{
+    background: #fff;
+    color: #000 !important;
+}
 .jumbotron h1{
     font-size: 36px !important;
 }
-
 .article {
     list-style: none;
 }
-
 .article h2 {
     font-size: 16px;
 }
-
 .article img, .article p, .article div {
     display: none;
+}
+footer{
+    background: #6B74AF;
+    color: #fff !important;
+    width: 100% !important;
+    position: fixed !important;
+    display: block !important;
+    overflow: hidden !important;
+    bottom:0 !important;
+    padding: 15px 0 0;
+}
+
+footer .container{
+    display: block;
+    overflow: hidden;
+}
+
+.social{
+width:50px !important;
+height: 50px !important;
+background: #f60 !important;
 }

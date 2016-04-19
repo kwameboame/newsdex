@@ -11,10 +11,12 @@
     <link rel="icon" href="../../favicon.ico">
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
 
-    <title>CustDex</title>
+    <title>Texigram</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -28,14 +30,15 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'homepage' %}">News Explorer</a>
+            <a class="navbar-brand" href="{% url 'homepage' %}" title="Texigram"><img src="{% static 'images/logo.png' %}" /></a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
+        <div id="navbar" class="navbar-collapse collapse pull-right">
             <ul class="nav navbar-nav">
                 <li><a href="{% url 'homepage' %}">Home</a></li>
                 <li><a href="{% url 'articles_list' %}">Articles</a></li>
-                <li><a href="{% url 'feeds_list' %}">News Feeds</a></li>
-                <li><a href="{% url 'facebook_posts' %}">Facebook Posts</a></li>
+                <li><a href="{% url 'feeds_list' %}">Feeds</a></li>
+                <li><a href="{% url 'feeds_list' %}">Twitter</a></li>
+                <li><a href="{% url 'facebook_posts' %}">Facebook</a></li>
                 <li><a href="{% url 'nltk' %}">Trends</a></li>
                 <li><a href="{% url 'tracked_words' %}">Tracked Words</a></li>
             </ul>
@@ -46,12 +49,32 @@
 {% block content %}
 {% endblock %}
 
+<div style="padding-bottom:80px;"></div>
+
+        <footer>
+        <div class="container">
+            <p>&copy; 2016 Ghana News Explorer</p>
+        </div>
+        </footer>
+
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+
+<script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
+
+
 
 <!-- need it for daterangepicker -->
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -61,6 +84,17 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
+$(document).ready(function() {
+    $('#example').DataTable( {
+        dom: 'lBfrtip',
+        "processing": true,
+        "pageLength": 50,
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+} );
+
     $(function () {
         $('#daterange').daterangepicker();
         $('#daterange').on('apply.daterangepicker', function (ev, picker) {
@@ -79,6 +113,7 @@
                 ajax_fill('/news/ajax_articles', startDate, endDate);
             }
         });
+
         function ajax_fill(url, startDate, endDate) {
             $.ajax({
                 url: url,
