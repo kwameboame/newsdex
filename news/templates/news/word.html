@@ -12,24 +12,60 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <h2>All for word '{{ word }}'</h2>
                 <div class="cycle">
                     {% if items %}
-                        <h3>{{ kind_verbose }}</h3>
+                        <!-- <h3>{{ kind_verbose }}</h3> -->
                         {% for item in items %}
-                            {% if kind == 'article' %}
-                                <li><a href="{{ item.url }}">{{ item.title }}</a></li>
-                            {% elif kind == 'post' %}
+                            {% if kind == 'post' %}
                                 <li>{{ item.text }}<span>{{ item.created_time }}</span></li>
                             {% elif kind == 'comment' %}
                                 <li>{{ item.message }}<span>{{ item.created_time }}</span></li>
                             {% endif %}
+
                         {% endfor %}
+
+
+<div class="">
+<table id="example" class="display nowrap table" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Article</th>
+                <th>Source</th>
+                <th>Published Date</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Article</th>
+                <th>Source</th>
+                <th>Published Date</th>
+            </tr>
+        </tfoot>
+        <tbody>
+        {% for item in items %}
+        {% if kind == 'article' %}
+            <tr>
+                <td><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></td>
+                <td>{{ item.feed }}</td>
+                <td>{{ item.created_time }}</td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+
+<div style="margin-bottom:100px;"></div>
+                          
+
                     {% else %}
                         <h3>Articles</h3>
                         {% for article in articles %}
-                            <li><a href="{{ article.url }}">{{ article.title }}</a></li>
+                            <li><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></li>
                         {% endfor %}
                         <h3>Facebook posts</h3>
                         {% for post in posts %}
@@ -44,9 +80,7 @@
             </div>
         </div>
 
-        <footer>
-            <p>&copy; 2015 Django News Aggregator</p>
-        </footer>
-    </div> <!-- /container -->
+   </div> <!-- /container -->
+
 
 {% endblock %}

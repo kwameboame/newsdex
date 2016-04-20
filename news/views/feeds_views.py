@@ -35,7 +35,7 @@ def articles_list(request):
     # 'title' : 'list'
     # }
 
-    return render(request, 'news/articles_list.html', {'rows': rows})
+    return render(request, 'news/home.html', {'rows': rows})
 
 
 def ajax_articles(request):
