@@ -5,8 +5,8 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
         <div class="container">
-            <h1>Ghana News Explorer</h1>
-            <p>Aggregating & Analyzing Ghana's news from top media houses.</p>
+            <h1>Aggregated posts for trending word</h1>
+            <p>Here are the posts related to the selected trending word.</p>
         </div>
     </div>
 
@@ -14,6 +14,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h2>All for word '{{ word }}'</h2>
+                {% if kind == 'comment' %}<h4><strong>Tracked in Facebook Comments</strong></h4> <br>{% endif %}
                 <div class="cycle">
                     {% if items %}
                         <!-- <h3>{{ kind_verbose }}</h3> -->
@@ -21,12 +22,12 @@
                             {% if kind == 'post' %}
                                 <li>{{ item.text }}<span>{{ item.created_time }}</span></li>
                             {% elif kind == 'comment' %}
-                                <li>{{ item.message }}<span>{{ item.created_time }}</span></li>
+                                <li>{{ item.message }}<span> <strong>POSTED ON: </strong>{{ item.created_time }}</span></li><br>
                             {% endif %}
 
                         {% endfor %}
 
-
+{% if kind == 'article' %}
 <div class="">
 <table id="example" class="display nowrap table" cellspacing="0" width="100%">
         <thead>
@@ -45,18 +46,18 @@
         </tfoot>
         <tbody>
         {% for item in items %}
-        {% if kind == 'article' %}
             <tr>
                 <td><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></td>
                 <td>{{ item.feed }}</td>
                 <td>{{ item.created_time }}</td>
             </tr>
-        {% endif %}
         {% endfor %}
 
         </tbody>
     </table>
 </div>
+
+        {% endif %}
 
 
 <div style="margin-bottom:100px;"></div>

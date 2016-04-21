@@ -5,8 +5,8 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
         <div class="container">
-            <h1>Ghana News Explorer</h1>
-            <p>Have a look around to see some of the latest and greatest news articles from your favorite feeds.</p>
+            <h1>Facebook Posts</h1>
+            <p>These are the posts from your tracked Facebook pages</p>
         </div>
     </div>
 
@@ -17,8 +17,7 @@
                     {% for facebookpost in facebook_posts %}
                         <li class="article">
                             <h2><a href="#" target="_blank">{{ facebookpost.text }}</a></h2>
-                            <span>{{ facebookpost.created_time | safe }}</span>
-                            <p>{{ facebookpost.parent_page }}</p>
+                            <span><strong>POSTED ON:</strong> {{ facebookpost.created_time | safe }} <strong>BY:</strong> {{ facebookpost.parent_page }}</span>
                         </li>
                     {% endfor %}
                 {% endif %}

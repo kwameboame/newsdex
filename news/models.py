@@ -121,8 +121,8 @@ class FacebookComment(models.Model):
     def __str__(self):
         return "%s..." % self.message[:40]
 
-class WordsFilter(models.Model):
+class FilteredWord(models.Model):
     filtered_word = models.CharField(default="", null=False, max_length=255)
 
     def __str__(self):
-        return self.word
+        return self.filtered_word
