@@ -13,6 +13,15 @@ class TagQuerySet(models.QuerySet):
                 comments_count=Count('word__facebookcomment', distinct=True),
         )
 
+    def tracked_for_articles(self):
+        return self.tracked().filter(articles_count__gt=0)
+
+    def tracked_for_posts(self):
+        return self.tracked().filter(posts_count__gt=0)
+
+    def tracked_for_comments(self):
+        return self.tracked().filter(comments_count__gt=0)
+
     def get_top(self, field, date_from, date_to, count):
         """
         Returns top trending words (ignore case search) for given range of dates

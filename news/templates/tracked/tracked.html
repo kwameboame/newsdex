@@ -12,18 +12,60 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
-                {% if tracked_words %}
-                    <ul>
-                        {% for trackedword in tracked_words %}
-                            <li class="item"><a href="/news/word?word={{ trackedword }}">{{ trackedword }}</a></li>
-                            <span>{{ trackedword.articles_count }} articles, {{ trackedword.posts_count }} posts, {{ trackedword.comments_count }} comments</span>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-        </div>
+            {% if articles_words %}
+                <div class="col-xs-3">
+                    <div class="card blue">
+                        <div class="card-heading">
+                            <h3>Article Tracked Words</h3>
+                        </div>
+                        <div class="list-group list-group-lg no-bg">
+                            {% for word in articles_words %}
+                                <a href="/news/word?kind=article&word={{ word.iword }}" class="list-group-item text-ellipsis"><span class="pull-right">
+                                        <i class="mdi-action-trending-down i-20 text-muted-dk"></i></span>
+                                    {{ word.iword }} {{ word.articles_count }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
+            {% if posts_words %}
+                <div class="col-xs-3">
+                    <div class="card blue">
+                        <div class="card-heading">
+                            <h3>FB Post Tracked Words</h3>
+                        </div>
+                        <div class="list-group list-group-lg no-bg">
+                            {% for word in posts_words %}
+                                <a href="/news/word?kind=post&word={{ word.iword }}" class="list-group-item text-ellipsis"><span class="pull-right">
+                                        <i class="mdi-action-trending-down i-20 text-muted-dk"></i></span>
+                                    {{ word.iword }} {{ word.posts_count }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if comments_words %}
+                <div class="col-xs-3">
+                    <div class="card blue">
+                        <div class="card-heading">
+                            <h3>FB Comment Tracked Words</h3>
+                        </div>
+                        <div class="list-group list-group-lg no-bg">
+                            {% for word in comments_words %}
+                                <a href="/news/word?kind=comment&word={{ word.iword }}" class="list-group-item text-ellipsis"><span class="pull-right">
+                                        <i class="mdi-action-trending-down i-20 text-muted-dk"></i></span>
+                                    {{ word.iword }} {{ word.comments_count }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
     </div> <!-- /container -->
 
 {% endblock %}
