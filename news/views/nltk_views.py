@@ -71,11 +71,14 @@ def get_by_word_and_date(request):
         word_set = tag.word_set.all()
         kind = request.GET.get('kind')
         if kind in kinds:
+            qs = kinds[kind]['model'].objects.filter(words__in=word_set)
             date_from = request.GET.get('date_from')
             date_to = request.GET.get('date_to')
+            if date_from and date_to:
+                qs = qs.filter(created_time__date__gte=date_from, created_time__date__lte=date_to)
             context['kind'] = kind
             context['kind_verbose'] = kinds[kind]['verbose_name']
-            context['items'] = kinds[kind]['model'].objects.filter(created_time__date__gte=date_from, created_time__date__lte=date_to, words__in=word_set)
+            context['items'] = qs
         else:
             context['articles'] = Article.objects.filter(words__in=word_set)
             context['posts'] = FacebookPost.objects.filter(words__in=word_set)
@@ -92,7 +95,15 @@ class TrackedWordView(generic.ListView):
     def get_queryset(self):
         return Tag.objects.tracked()
 
+
 class FilteredWordView(generic.ListView):
     context_object_name = 'filtered_words'
     petition = FilteredWord
     queryset = FilteredWord.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['articles_words'] = Tag.objects.tracked_for_articles()
+        context['posts_words'] = Tag.objects.tracked_for_posts()
+        context['comments_words'] = Tag.objects.tracked_for_comments()
+        return context
