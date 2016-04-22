@@ -34,7 +34,7 @@ def parse_feed(feed_urls):
             logger.warn('Feed "%s" has duplicates!' % feedTitle)
         logger.debug('== Feed is: ==')
         logger.debug(feed.title)
-        logger.debug('-- There are entries in feed: --')
+        logger.debug('-- There are entries in feed: --') 
         logger.debug(len(feedData.entries))
         for entry in feedData.entries:
             try:

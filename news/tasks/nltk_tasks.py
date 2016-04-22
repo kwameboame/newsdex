@@ -20,7 +20,7 @@ def nltk_all_task():
             words = get_most_common_words(getattr(obj, lookup_content), 10, remove_stopwords=True)
             logger.debug('Words are:')
             for word in words:
-                word, pos = word['word']
+                word, pos = word['word'] 
                 logger.debug(word)
                 try:
                     new_word = Word.objects.get(word=word, pos=pos)

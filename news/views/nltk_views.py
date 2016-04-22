@@ -10,7 +10,7 @@ from news.models import Article, FacebookPost, FacebookComment, Word, Tag, Filte
 from news.tasks import nltk_all_task
 
 __author__ = 'ilov3'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__) 
 
 
 # NLTK
