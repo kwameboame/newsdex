@@ -6,7 +6,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import generic
 
-from news.models import Article, FacebookPost, FacebookComment, Word, Tag, FilteredWord
+from news.models import Article, FacebookPost, FacebookComment, Tag
 from news.tasks import nltk_all_task
 
 __author__ = 'ilov3'
@@ -101,9 +101,3 @@ class TrackedWordView(generic.ListView):
         context['posts_words'] = Tag.objects.tracked_for_posts()
         context['comments_words'] = Tag.objects.tracked_for_comments()
         return context
-
-
-class FilteredWordView(generic.ListView):
-    context_object_name = 'filtered_words'
-    petition = FilteredWord
-    queryset = FilteredWord.objects.all()

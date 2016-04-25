@@ -5,7 +5,7 @@ from celery.task import task
 from django.db import OperationalError
 
 from news.models import Word, Article, FacebookPost, FacebookComment, Tag
-from .utils import get_most_common_words
+from news.utils.nltkutils import get_most_common_words
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)

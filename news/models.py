@@ -3,6 +3,7 @@ from django.db import models
 
 # Create your models here.
 from django.db.models import Count, Case, When, F
+from news.utils.nltkutils import get_nltk_stop_words
 
 
 class TagQuerySet(models.QuerySet):
@@ -38,9 +39,19 @@ class TagQuerySet(models.QuerySet):
         date_to_lookup = "word__%s__created_time__date__lte" % field
         count_lookup = "%s_count" % field
         return self \
+                   .non_stop_words() \
                    .filter(**{date_from_lookup: date_from, date_to_lookup: date_to}) \
                    .annotate(**{count_lookup: Count(Case(When(**{date_from_lookup: date_from, date_to_lookup: date_to, 'then': F('word__%s' % field)})), distinct=True)}) \
                    .order_by("-%s" % count_lookup)[:count]
+
+    def _get_stop_words(self):
+        from_db = set(self.filter(filtered=True).values_list('iword', flat=True))
+        from_nltk = get_nltk_stop_words()
+        return from_db.union(from_nltk)
+
+    def non_stop_words(self):
+        stop_words = self._get_stop_words()
+        return self.exclude(iword__in=stop_words)
 
 
 class Feed(models.Model):
@@ -55,6 +66,7 @@ class Feed(models.Model):
 class Tag(models.Model):
     iword = models.CharField(max_length=200, unique=True)
     tracked = models.BooleanField(default=False)
+    filtered = models.BooleanField(default=False)
     objects = TagQuerySet.as_manager()
 
     def __str__(self):
@@ -129,9 +141,3 @@ class FacebookComment(models.Model):
 
     def __str__(self):
         return "%s..." % self.message[:40]
-
-class FilteredWord(models.Model):
-    filtered_word = models.CharField(default="", null=False, max_length=255)
-
-    def __str__(self):
-        return self.filtered_word

@@ -12,7 +12,7 @@ from django.db.models import Q
 from readability import Document
 
 from news.models import Feed, Article, FacebookPost, FacebookComment, FacebookUser, FacebookPage
-from news.tasks.utils import get_access_token, FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET
+from news.utils.facebookutils import FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, get_access_token
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def parse_feed(feed_urls):
             logger.warn('Feed "%s" has duplicates!' % feedTitle)
         logger.debug('== Feed is: ==')
         logger.debug(feed.title)
-        logger.debug('-- There are entries in feed: --') 
+        logger.debug('-- There are entries in feed: --')
         logger.debug(len(feedData.entries))
         for entry in feedData.entries:
             try:

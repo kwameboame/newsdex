@@ -8,7 +8,6 @@ admin.site.register(FacebookPage)
 admin.site.register(FacebookPost)
 admin.site.register(Feed)
 admin.site.register(Article)
-admin.site.register(FilteredWord)
 
 
 @admin.register(Word)
@@ -19,5 +18,5 @@ class WordAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('iword', 'tracked')
+    list_display = ('iword', 'tracked', 'filtered')
     search_fields = ['iword']  # change this to "search_fields = ['iword__icontains']" after going from sqLite
