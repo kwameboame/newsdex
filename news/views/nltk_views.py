@@ -95,15 +95,15 @@ class TrackedWordView(generic.ListView):
     def get_queryset(self):
         return Tag.objects.tracked()
 
-
-class FilteredWordView(generic.ListView):
-    context_object_name = 'filtered_words'
-    petition = FilteredWord
-    queryset = FilteredWord.objects.all()
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['articles_words'] = Tag.objects.tracked_for_articles()
         context['posts_words'] = Tag.objects.tracked_for_posts()
         context['comments_words'] = Tag.objects.tracked_for_comments()
         return context
+
+
+class FilteredWordView(generic.ListView):
+    context_object_name = 'filtered_words'
+    petition = FilteredWord
+    queryset = FilteredWord.objects.all()
