@@ -2,29 +2,10 @@
 import logging
 
 import nltk
-import requests
 from nltk.corpus import wordnet
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
-FACEBOOK_CLIENT_ID = '105323143198945'
-FACEBOOK_CLIENT_SECRET = 'e10beb3dc3a388480927d29493168545'
-
-
-def get_access_token(client_id, client_secret):
-    url = 'https://graph.facebook.com/oauth/access_token'
-    params = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'grant_type': 'client_credentials',
-
-    }
-    req = requests.get(url, params=params)
-    s = req.text.split('=')
-    if (s[0] == 'access_token') and (len(s) == 2):
-        return s[1]
-    else:
-        return None
 
 
 def wordnet_pos_code(tag):
@@ -40,9 +21,13 @@ def wordnet_pos_code(tag):
         return None
 
 
+def get_nltk_stop_words():
+    return set(nltk.corpus.stopwords.words('english'))
+
+
 def get_most_common_words(text, words_count, remove_stopwords=False):
     # NLTK's default stopwords
-    stopwords = set(nltk.corpus.stopwords.words('english'))
+    stopwords = get_nltk_stop_words()
 
     # Making a list of tagged words
     tagged_words = nltk.word_tokenize(text)
