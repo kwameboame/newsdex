@@ -4,7 +4,7 @@ import logging
 from celery.task import task
 from django.db import OperationalError
 
-from news.models import Word, Article, FacebookPost, FacebookComment, Tag
+from news.models import Word, Article, FacebookPost, FacebookComment, Tag, Tweet
 from news.utils.nltkutils import get_most_common_words
 
 __author__ = 'ilov3'
@@ -48,7 +48,9 @@ def nltk_all_task():
     articles = Article.objects.all()
     posts = FacebookPost.objects.all()
     comments = FacebookComment.objects.all()
+    tweets = Tweet.objects.all()
 
+    add_words(tweets, 'tweet_id', 'text')
     add_words(articles, 'title', 'content')
     add_words(posts, 'post_id', 'text')
     add_words(comments, 'comment_id', 'message')

@@ -6,7 +6,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import generic
 
-from news.models import Article, FacebookPost, FacebookComment, Tag
+from news.models import Article, FacebookPost, FacebookComment, Tag, Tweet
 from news.tasks import nltk_all_task
 
 __author__ = 'ilov3'
@@ -49,6 +49,7 @@ def ajax_nltk(request):
     context['articles_words'] = Tag.objects.get_top('article', date_from, date_to, 15)
     context['posts_words'] = Tag.objects.get_top('facebookpost', date_from, date_to, 15)
     context['comments_words'] = Tag.objects.get_top('facebookcomment', date_from, date_to, 15)
+    context['tweet_words'] = Tag.objects.get_top('tweet', date_from, date_to, 15)
 
     return render(request, 'news/nltk_cycle.html', context=context)
 
@@ -65,7 +66,8 @@ def get_by_word_and_date(request):
         kinds = {
             'article': {'model': Article, 'verbose_name': 'Articles'},
             'post': {'model': FacebookPost, 'verbose_name': 'Facebook posts'},
-            'comment': {'model': FacebookComment, 'verbose_name': 'Facebook comments'}
+            'comment': {'model': FacebookComment, 'verbose_name': 'Facebook comments'},
+            'tweet': {'model': Tweet, 'verbose_name': 'Tweets'},
         }
         tag = Tag.objects.get(iword=word.lower())
         word_set = tag.word_set.all()
@@ -100,4 +102,5 @@ class TrackedWordView(generic.ListView):
         context['articles_words'] = Tag.objects.tracked_for_articles()
         context['posts_words'] = Tag.objects.tracked_for_posts()
         context['comments_words'] = Tag.objects.tracked_for_comments()
+        context['tweets_words'] = Tag.objects.tracked_for_tweets()
         return context

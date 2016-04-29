@@ -12,6 +12,7 @@ class TagQuerySet(models.QuerySet):
                 articles_count=Count('word__article', distinct=True),
                 posts_count=Count('word__facebookpost', distinct=True),
                 comments_count=Count('word__facebookcomment', distinct=True),
+                tweets_count=Count('word__tweet', distinct=True),
         )
 
     def tracked_for_articles(self):
@@ -22,6 +23,9 @@ class TagQuerySet(models.QuerySet):
 
     def tracked_for_comments(self):
         return self.tracked().filter(comments_count__gt=0)
+
+    def tracked_for_tweets(self):
+        return self.tracked().filter(tweets_count__gt=0)
 
     def get_top(self, field, date_from, date_to, count):
         """
@@ -141,3 +145,26 @@ class FacebookComment(models.Model):
 
     def __str__(self):
         return "%s..." % self.message[:40]
+
+
+class TwitterUser(models.Model):
+    user_id = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Tweet(models.Model):
+    tweet_id = models.CharField(max_length=255, unique=True)
+    text = models.TextField()
+    coordinates = models.CharField(max_length=255, blank=True, null=True)
+    created_time = models.DateTimeField()
+    retweet_count = models.IntegerField()
+    user = models.ForeignKey(TwitterUser)
+    words = models.ManyToManyField(Word)
+
+    def __str__(self):
+        return "%s..." % self.text[:40]

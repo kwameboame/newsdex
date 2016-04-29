@@ -1,0 +1,48 @@
+{% extends 'news/base.html' %}
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Tweet streams</h1>
+            <p>Start or stop fetching tweet stream.</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <h3>Start new tweet stream</h3>
+            <div class="col-md-6">
+                <form action="{% url 'startstream' %}" method="post">
+                    {% csrf_token %}
+                    <label>
+                        Keyword
+                        <input type="text" name="keyword">
+                    </label>
+                    <h5>Or</h5>
+                    <label>
+                        Location
+                        <input type="text" name="location">
+                    </label>
+                    <hr>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+                {% if streams %}
+                    <h4>Running streams</h4>
+                    {% for stream in streams %}
+                        <div class="inline-group">
+                            <form action="{% url 'stop_stream' %}" method="post">
+                                {% csrf_token %}
+                                {% if stream.kwargs.keyword %}
+                                    <p>Parameter: {{ stream.kwargs.keyword }}</p>
+                                {% endif %}
+                                {% if stream.kwargs.location %}
+                                    <p>Parameter: {{ stream.kwargs.location }}</p>
+                                {% endif %}
+                                <input type="hidden" value="{{ stream.id }}" name="task_id">
+                                <button type="submit" class="btn btn-primary">Stop stream</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
