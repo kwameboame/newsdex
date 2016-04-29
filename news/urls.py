@@ -17,4 +17,8 @@ urlpatterns = [
     url(r'^ajax_nltk', views.ajax_nltk, name='ajax_nltk'),
     url(r'^word', views.get_by_word_and_date, name='word_by_date'),
     url(r'^trends', views.nltk_all, name='trends'),
+    url(r'^tweets', views.tweets_list, name='tweet_list'),
+    url(r'^stopstream', views.stop_stream, name='stop_stream'),
+    url(r'^startstream', views.new_tweet_stream, name='startstream'),
+    url(r'^streams', views.streams, name='streams')
 ]

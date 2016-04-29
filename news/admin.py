@@ -8,6 +8,8 @@ admin.site.register(FacebookPage)
 admin.site.register(FacebookPost)
 admin.site.register(Feed)
 admin.site.register(Article)
+admin.site.register(TwitterUser)
+admin.site.register(Tweet)
 
 
 @admin.register(Word)

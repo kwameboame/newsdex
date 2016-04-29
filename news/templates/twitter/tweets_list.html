@@ -1,0 +1,48 @@
+{% extends 'news/base.html' %}
+
+{% block content %}
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1>New tweet stream</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <table id="example" class="display nowrap table" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Twitter user</th>
+                        <th>Tweet text</th>
+                        <th>Published Date</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Twitter user</th>
+                        <th>Tweet text</th>
+                        <th>Published Date</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for tweet in tweets %}
+                        <tr>
+                            <td>{{ tweet.user.name }}</td>
+                            <td>{{ tweet.text }}</td>
+                            <td>{{ tweet.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+
+    </div> <!-- /container -->
+
+{% endblock %}

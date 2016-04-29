@@ -5,7 +5,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
         <div class="container">
-            <h1>Aggregated posts for trending word</h1> 
+            <h1>Aggregated posts for trending word</h1>
             <p>Here are the posts related to the selected trending word.</p>
         </div>
     </div>
@@ -23,45 +23,47 @@
                                 <li>{{ item.text }}<span>{{ item.created_time }}</span></li>
                             {% elif kind == 'comment' %}
                                 <li>{{ item.message }}<span> <strong>POSTED ON: </strong>{{ item.created_time }}</span></li><br>
+                            {% elif kind == 'tweet' %}
+                                <li>{{ item.text }}<span> <strong>POSTED ON: </strong>{{ item.created_time }}</span></li><br>
                             {% endif %}
 
                         {% endfor %}
 
-{% if kind == 'article' %}
-<div class="">
-<table id="example" class="display nowrap table" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>Article</th>
-                <th>Source</th>
-                <th>Published Date</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th>Article</th>
-                <th>Source</th>
-                <th>Published Date</th>
-            </tr>
-        </tfoot>
-        <tbody>
-        {% for item in items %}
-            <tr>
-                <td><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></td>
-                <td>{{ item.feed }}</td>
-                <td>{{ item.created_time }}</td>
-            </tr>
-        {% endfor %}
+                        {% if kind == 'article' %}
+                            <div class="">
+                                <table id="example" class="display nowrap table" cellspacing="0" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Article</th>
+                                        <th>Source</th>
+                                        <th>Published Date</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Article</th>
+                                        <th>Source</th>
+                                        <th>Published Date</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    {% for item in items %}
+                                        <tr>
+                                            <td><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></td>
+                                            <td>{{ item.feed }}</td>
+                                            <td>{{ item.created_time }}</td>
+                                        </tr>
+                                    {% endfor %}
 
-        </tbody>
-    </table>
-</div>
+                                    </tbody>
+                                </table>
+                            </div>
 
-        {% endif %}
+                        {% endif %}
 
 
-<div style="margin-bottom:100px;"></div>
-                          
+                        <div style="margin-bottom:100px;"></div>
+
 
                     {% else %}
                         <h3>Articles</h3>
@@ -81,7 +83,7 @@
             </div>
         </div>
 
-   </div> <!-- /container -->
+    </div> <!-- /container -->
 
 
 {% endblock %}

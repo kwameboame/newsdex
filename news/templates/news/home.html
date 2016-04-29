@@ -15,30 +15,30 @@
             <div class="col-md-12">
 
 <div class="">
-<table id="example" class="display nowrap table" cellspacing="0" width="100%">
+    <table id="example" class="display nowrap table" cellspacing="0" width="100%">
         <thead>
-            <tr>
-                <th>Article</th>
-                <th>Source</th>
-                <th>Published Date</th>
-            </tr>
+        <tr>
+            <th>Article</th>
+            <th>Source</th>
+            <th>Published Date</th>
+        </tr>
         </thead>
         <tfoot>
-            <tr>
-                <th>Article</th>
-                <th>Source</th>
-                <th>Published Date</th>
-            </tr>
+        <tr>
+            <th>Article</th>
+            <th>Source</th>
+            <th>Published Date</th>
+        </tr>
         </tfoot>
         <tbody>
         {% for row in rows %}
-                    {% for entry in row %}
-            <tr>
-                <td><a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a></td>
-                <td>{{ entry.feed }}</td>
-                <td>{{ entry.created_time }}</td>
-            </tr>
-        {% endfor %}
+            {% for entry in row %}
+                <tr>
+                    <td><a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a></td>
+                    <td>{{ entry.feed }}</td>
+                    <td>{{ entry.created_time }}</td>
+                </tr>
+            {% endfor %}
         {% endfor %}
 
         </tbody>
