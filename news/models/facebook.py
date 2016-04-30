@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 
+import requests
 from django.db import models
 
 from news.models.nltk import Word
@@ -47,3 +48,26 @@ class FacebookComment(models.Model):
 
     def __str__(self):
         return "%s..." % self.message[:40]
+
+
+class FacebookAPISetting(models.Model):
+    client_id = models.CharField(max_length=255)
+    client_secret = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.client_id
+
+    def get_access_token(self):
+        url = 'https://graph.facebook.com/oauth/access_token'
+        params = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'grant_type': 'client_credentials',
+
+        }
+        req = requests.get(url, params=params)
+        s = req.text.split('=')
+        if (s[0] == 'access_token') and (len(s) == 2):
+            return s[1]
+        else:
+            return None

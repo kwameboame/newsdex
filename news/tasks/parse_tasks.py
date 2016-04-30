@@ -11,8 +11,7 @@ from celery import Task
 from django.db.models import Q
 from readability import Document
 
-from news.models import Feed, Article, FacebookPost, FacebookComment, FacebookUser, FacebookPage
-from news.utils.facebookutils import FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, get_access_token
+from news.models import Feed, Article, FacebookPost, FacebookComment, FacebookUser, FacebookPage, FacebookAPISetting
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
@@ -79,7 +78,15 @@ def parse_feed(feed_urls):
 
 
 def parse_facebook(pages):
-    access_token = get_access_token(FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET)
+    try:
+        facebook_api_settings = FacebookAPISetting.objects.get()
+    except FacebookAPISetting.MultipleObjectsReturned:
+        logger.error('You have more than one facebook API settings! Go to admin page, and fix the problem.')
+        raise Exception()
+    except FacebookAPISetting.DoesNotExist:
+        logger.error('You haven\'t got any facebook API settings! Go to admin page, and add one.')
+        raise Exception()
+    access_token = facebook_api_settings.get_access_token()
     if access_token is not None:
         logger.debug('== Let try to parse all of facebook links ==')
         for page in pages:

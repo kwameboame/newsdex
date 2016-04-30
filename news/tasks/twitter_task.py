@@ -11,8 +11,7 @@ from tweepy import Stream
 from celery.task import task
 from celery.signals import task_revoked
 
-from news.models import TwitterUser, Tweet
-from news.utils.twitterutils import ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET
+from news.models import TwitterUser, Tweet, TwitterAPISetting
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
@@ -45,8 +44,8 @@ class SaveListener(StreamListener):
     def on_data(self, data):
         try:
             tweet = json.loads(data)
-            logger.warn(tweet['text'])
-            logger.warn(tweet['created_at'])
+            logger.debug(tweet['text'])
+            logger.debug(tweet['created_at'])
             self.save_twitter_user(tweet['user'])
             self.save_tweet(tweet)
             return True
@@ -62,8 +61,16 @@ class SaveListener(StreamListener):
 def twitter_task(keyword=None, location=None):
     logger.debug('Starting parse twitter stream on keyword/location: "%s"' % (keyword or location))
     l = SaveListener()
-    auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    try:
+        twitter_api_settings = TwitterAPISetting.objects.get()
+    except TwitterAPISetting.MultipleObjectsReturned:
+        logger.error('You have more than one twitter API settings! Go to admin page, and fix the problem.')
+        raise Exception()
+    except TwitterAPISetting.DoesNotExist:
+        logger.error('You haven\'t got any twitter API settings! Go to admin page, and add one.')
+        raise Exception()
+    auth = OAuthHandler(twitter_api_settings.consumer_key, twitter_api_settings.consumer_secret)
+    auth.set_access_token(twitter_api_settings.access_token, twitter_api_settings.access_token_secret)
     stream = Stream(auth, l)
     if keyword:
         stream.filter(track=[keyword])

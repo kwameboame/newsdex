@@ -30,3 +30,13 @@ class Tweet(models.Model):
 
     def __str__(self):
         return "%s..." % self.text[:40]
+
+
+class TwitterAPISetting(models.Model):
+    consumer_key = models.CharField(max_length=255)
+    consumer_secret = models.CharField(max_length=255)
+    access_token = models.CharField(max_length=255)
+    access_token_secret = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.consumer_key
