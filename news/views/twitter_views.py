@@ -1,7 +1,7 @@
 # coding=utf-8
 import logging
 
-from celery.task.control import revoke
+from newsproject import celery_app
 from django.shortcuts import redirect, render
 
 from news.models import Tweet
@@ -20,8 +20,8 @@ def stop_stream(request):
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
         if task_id:
-            revoke(task_id=task_id, terminate=True)
-    return redirect('streams')
+            celery_app.control.revoke(task_id=task_id, terminate=True)
+    return redirect('settings')
 
 
 def new_tweet_stream(request):
@@ -31,5 +31,5 @@ def new_tweet_stream(request):
         if location:
             location = [float(coordinate) for coordinate in location.split(',')]
         twitter_task.delay(keyword=keyword, location=location)
-        return redirect('streams')
-    return redirect('streams')
+        return redirect('settings')
+    return redirect('settings')

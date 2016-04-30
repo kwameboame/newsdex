@@ -2,7 +2,8 @@
 import logging
 from operator import setitem
 
-from celery.task.control import inspect
+from news.models import Feed
+from newsproject import celery_app
 from django.shortcuts import render
 
 from tweepy.streaming import json
@@ -11,8 +12,10 @@ __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
 
 
-def streams(request):
-    i = inspect()
+def settings(request):
+    feeds = Feed.objects.all()
+
+    i = celery_app.control.inspect()
     active_tasks = i.active()
     tasks_list = []
     if isinstance(active_tasks, dict):
@@ -22,4 +25,4 @@ def streams(request):
             [setitem(task, 'kwargs', json.loads(task['kwargs'].replace("'", '"'))) for task in tasks_list]
         except IndexError:
             pass
-    return render(request, 'misc/streams.html', {'streams': tasks_list})
+    return render(request, 'settings/settings.html', {'streams': tasks_list, 'feeds': feeds})

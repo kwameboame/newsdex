@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 import djcelery
+from kombu import Queue, Exchange
 
 djcelery.setup_loader()
 
@@ -43,10 +44,6 @@ INSTALLED_APPS = (
     'news',
     'djcelery',
 )
-
-BROKER_URL = 'redis://127.0.0.1:6379/0'
-BROKER_TRANSPORT = 'redis'
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 # CSRF_COOKIE_DOMAIN = 'newsdex-artyomlisovskij.c9users.io'
 
@@ -161,4 +158,19 @@ LOGGING = {
             'propagate': False,
         }
     }
+}
+
+# Celery settings
+BROKER_URL = 'redis://127.0.0.1:6379/0'
+BROKER_TRANSPORT = 'redis'
+
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default'),
+    Queue('for_twitter_task', Exchange('for_twitter_task'), routing_key='for_twitter_task'),
+)
+
+CELERY_ROUTES = {
+    'news.tasks.twitter_task.twitter_task': {'queue': 'for_twitter_task', 'routing_key': 'for_twitter_task'},
 }

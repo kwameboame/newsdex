@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 
 from news.forms import FeedForm
 from news.models import Article, Feed
-from news.tasks import ParseAllTask
+from news.tasks import ParseAllTask, ParseFeedTask
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
@@ -54,11 +54,6 @@ def ajax_articles(request):
     return render(request, 'news/articles_cycle.html', locals())  # {'rows' : rows})
 
 
-def feeds_list(request):
-    feeds = Feed.objects.all()
-    return render(request, 'news/feeds_list.html', {'feeds': feeds})
-
-
 def new_feed(request):
     if request.method == "POST":
         form = FeedForm(request.POST)
@@ -67,7 +62,7 @@ def new_feed(request):
             existingFeed = Feed.objects.filter(url=url)
             if len(existingFeed) == 0:
                 ParseAllTask().delay(feed_url=url)
-            return redirect('feeds_list')
+            return redirect('settings')
     else:
         form = FeedForm()
     return render(request, 'news/new_feed.html', {'form': form})
@@ -76,3 +71,11 @@ def new_feed(request):
 def parse_manual(request):
     ParseAllTask().delay()
     return redirect('articles_list')
+
+
+def parse_feed(request):
+    if request.method == "POST":
+        url = request.POST.get('url')
+        if url:
+            ParseFeedTask().delay(feed_url=url)
+    return redirect('settings')

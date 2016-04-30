@@ -18,11 +18,7 @@ __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
 
 
-class StdOutListener(StreamListener):
-    """ A listener handles tweets are the received from the stream.
-    This is a basic listener that just prints received tweets to stdout.
-    """
-
+class SaveListener(StreamListener):
     @staticmethod
     def save_tweet(tweet):
         dt_format = '%a %b %d %X %z %Y'
@@ -65,7 +61,7 @@ class StdOutListener(StreamListener):
 @task
 def twitter_task(keyword=None, location=None):
     logger.debug('Starting parse twitter stream on keyword/location: "%s"' % (keyword or location))
-    l = StdOutListener()
+    l = SaveListener()
     auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     stream = Stream(auth, l)
@@ -76,6 +72,6 @@ def twitter_task(keyword=None, location=None):
     logger.warn('Nor keyword or location param is given')
 
 
-@task_revoked.connect(sender='news.streams.twitter_task.twitter_task')
+@task_revoked.connect(sender='news.tasks.twitter_task.twitter_task')
 def on_task_revoked():
     logger.warn('Twitter task revoked!')

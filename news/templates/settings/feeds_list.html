@@ -1,0 +1,20 @@
+<div class="col-md-6">
+    <a href="{% url 'feed_new' %}" class="btn btn-primary">New Feed</a>
+    <hr>
+    <ul>
+        {% for feed in feeds %}
+            <div class="row">
+                <div class="col-md-6">
+                    <form class="form-inline" method="post" action="{% url 'parse_feed' %}">
+                        {% csrf_token %}
+                        <a href="{{ feed.url }}">{{ feed.title }}</a>
+                        <input type="hidden" name="url" value="{{ feed.url }}">
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-primary">Parse</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </ul>
+</div>
