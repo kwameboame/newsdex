@@ -3,8 +3,9 @@ import logging
 from operator import setitem
 
 from news.models import Feed
+from news.tasks import twitter_task
 from newsproject import celery_app
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from tweepy.streaming import json
 
@@ -26,3 +27,22 @@ def settings(request):
         except IndexError:
             pass
     return render(request, 'settings/settings.html', {'streams': tasks_list, 'feeds': feeds})
+
+
+def stop_stream(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id')
+        if task_id:
+            celery_app.control.revoke(task_id=task_id, terminate=True)
+    return redirect('settings')
+
+
+def new_tweet_stream(request):
+    if request.method == "POST":
+        keyword = request.POST.get('keyword')
+        location = request.POST.get('location')
+        if location:
+            location = [float(coordinate) for coordinate in location.split(',')]
+        twitter_task.delay(keyword=keyword, location=location)
+        return redirect('settings')
+    return redirect('settings')

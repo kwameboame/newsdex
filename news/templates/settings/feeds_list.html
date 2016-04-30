@@ -1,5 +1,4 @@
 <div class="col-md-6">
-    <a href="{% url 'feed_new' %}" class="btn btn-primary">New Feed</a>
     <hr>
     <ul>
         {% for feed in feeds %}
@@ -17,4 +16,6 @@
             </div>
         {% endfor %}
     </ul>
+    <hr>
+    <a href="{% url 'feed_new' %}" class="btn btn-primary">New Feed</a>
 </div>
