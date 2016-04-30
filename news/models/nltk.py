@@ -1,9 +1,14 @@
+# coding=utf-8
 import datetime
-from django.db import models
+import logging
 
-# Create your models here.
+from django.db import models
 from django.db.models import Count, Case, When, F
+
 from news.utils.nltkutils import get_nltk_stop_words
+
+__author__ = 'ilov3'
+logger = logging.getLogger(__name__)
 
 
 class TagQuerySet(models.QuerySet):
@@ -58,15 +63,6 @@ class TagQuerySet(models.QuerySet):
         return self.exclude(iword__in=stop_words)
 
 
-class Feed(models.Model):
-    title = models.CharField(max_length=200)
-    url = models.URLField(unique=True)
-    is_active = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title
-
-
 class Tag(models.Model):
     iword = models.CharField(max_length=200, unique=True)
     tracked = models.BooleanField(default=False)
@@ -92,79 +88,3 @@ class Word(models.Model):
     class Meta:
         ordering = ['word']
         unique_together = ("word", "pos")
-
-
-class Article(models.Model):
-    feed = models.ForeignKey(Feed)
-    title = models.CharField(max_length=200, unique=True)
-    url = models.URLField(unique=True)
-    description = models.TextField()
-    content = models.TextField(default="")
-    created_time = models.DateTimeField()
-    words = models.ManyToManyField(Word)
-
-    def __str__(self):
-        return self.title
-
-
-class FacebookPage(models.Model):
-    title = models.CharField(max_length=255)
-    url = models.URLField()
-    is_active = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title
-
-
-class FacebookPost(models.Model):
-    parent_page = models.ForeignKey(FacebookPage)
-    created_time = models.DateTimeField()
-    text = models.TextField()
-    post_id = models.CharField(max_length=255, unique=True)
-    words = models.ManyToManyField(Word)
-
-    def __str__(self):
-        return "%s..." % self.text[:40]
-
-
-class FacebookUser(models.Model):
-    user_id = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
-class FacebookComment(models.Model):
-    post_id = models.ForeignKey(FacebookPost, blank=True, null=True)
-    user_id = models.ForeignKey(FacebookUser)
-    created_time = models.DateTimeField()
-    message = models.TextField()
-    comment_id = models.CharField(max_length=255, unique=True)
-    words = models.ManyToManyField(Word)
-
-    def __str__(self):
-        return "%s..." % self.message[:40]
-
-
-class TwitterUser(models.Model):
-    user_id = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
-class Tweet(models.Model):
-    tweet_id = models.CharField(max_length=255, unique=True)
-    text = models.TextField()
-    coordinates = models.CharField(max_length=255, blank=True, null=True)
-    created_time = models.DateTimeField()
-    retweet_count = models.IntegerField()
-    user = models.ForeignKey(TwitterUser)
-    words = models.ManyToManyField(Word)
-
-    def __str__(self):
-        return "%s..." % self.text[:40]
