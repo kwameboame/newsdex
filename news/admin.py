@@ -6,10 +6,12 @@ admin.site.register(FacebookComment)
 admin.site.register(FacebookUser)
 admin.site.register(FacebookPage)
 admin.site.register(FacebookPost)
+admin.site.register(FacebookAPISetting)
 admin.site.register(Feed)
 admin.site.register(Article)
 admin.site.register(TwitterUser)
 admin.site.register(Tweet)
+admin.site.register(TwitterAPISetting)
 
 
 @admin.register(Word)

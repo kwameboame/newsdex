@@ -1,0 +1,16 @@
+{% extends 'news/base.html' %}
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Settings</h1>
+            <p>Start or stop fetching tweet stream.</p>
+            <p>Add news feeds</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            {% include 'settings/tweet_streams.html' %}
+            {% include 'settings/feeds_list.html' %}
+        </div>
+    </div>
+{% endblock %}

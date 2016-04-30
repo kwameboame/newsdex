@@ -3,9 +3,11 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.articles_list, name='articles_list'),
-    url(r'^feeds/new', views.new_feed, name='feed_new'),
-    url(r'^feeds/', views.feeds_list, name='feeds_list'),
     url(r'^ajax_articles', views.ajax_articles, name='ajax_articles'),
+
+    url(r'^feeds/new', views.new_feed, name='feed_new'),
+    url(r'^settings/', views.settings, name='settings'),
+    url(r'^parsefeed/', views.parse_feed, name='parse_feed'),
 
     # for parse manually
     url(r'^parse_manual', views.parse_manual),
@@ -20,5 +22,4 @@ urlpatterns = [
     url(r'^tweets', views.tweets_list, name='tweet_list'),
     url(r'^stopstream', views.stop_stream, name='stop_stream'),
     url(r'^startstream', views.new_tweet_stream, name='startstream'),
-    url(r'^streams', views.streams, name='streams')
 ]
