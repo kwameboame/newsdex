@@ -27,6 +27,7 @@ class Tweet(models.Model):
     retweet_count = models.IntegerField()
     user = models.ForeignKey(TwitterUser)
     words = models.ManyToManyField(Word)
+    nltkized = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s..." % self.text[:40]

@@ -25,6 +25,7 @@ class FacebookPost(models.Model):
     text = models.TextField()
     post_id = models.CharField(max_length=255, unique=True)
     words = models.ManyToManyField(Word)
+    nltkized = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s..." % self.text[:40]
@@ -45,6 +46,7 @@ class FacebookComment(models.Model):
     message = models.TextField()
     comment_id = models.CharField(max_length=255, unique=True)
     words = models.ManyToManyField(Word)
+    nltkized = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s..." % self.message[:40]
@@ -63,7 +65,6 @@ class FacebookAPISetting(models.Model):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'grant_type': 'client_credentials',
-
         }
         req = requests.get(url, params=params)
         s = req.text.split('=')

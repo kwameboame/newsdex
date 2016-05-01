@@ -44,11 +44,13 @@ def nltk_all_task():
                         logger.debug('Word exists in %s' % obj._meta.model_name)
                 except Exception as e:  # and even if we don't know what it actually was catch it and print or log it
                     logger.error('Something went wrong! The error was: %s' % e)
+            obj.nltkized = True
+            obj.save()
 
-    articles = Article.objects.all()
-    posts = FacebookPost.objects.all()
-    comments = FacebookComment.objects.all()
-    tweets = Tweet.objects.all()
+    articles = Article.objects.all().filter(nltkized=False)
+    posts = FacebookPost.objects.all().filter(nltkized=False)
+    comments = FacebookComment.objects.all().filter(nltkized=False)
+    tweets = Tweet.objects.all().filter(nltkized=False)
 
     add_words(tweets, 'tweet_id', 'text')
     add_words(articles, 'title', 'content')

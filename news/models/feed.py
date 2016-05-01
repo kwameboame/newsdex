@@ -26,6 +26,7 @@ class Article(models.Model):
     content = models.TextField(default="")
     created_time = models.DateTimeField()
     words = models.ManyToManyField(Word)
+    nltkized = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
