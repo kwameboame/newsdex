@@ -5,7 +5,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
         <div class="container">
-            <h1>New tweet stream</h1>
+            <h3>Tweets collected from stream "{% firstof stream.filter_location stream.filter_keyword %}" in period {{ stream.started }} - {{ stream.stopped }}</h3>
         </div>
     </div>
 

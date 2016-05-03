@@ -31,7 +31,10 @@ def new_tweet_stream(request):
         keyword = request.POST.get('keyword')
         location = request.POST.get('location')
         if location:
-            location = [float(coordinate) for coordinate in location.split(',')]
+            try:
+                location = [float(coordinate) for coordinate in location.split(',')]
+            except Exception as e:
+                logger.error('Could not convert location string (%s) into coordinates. Error: %s' % (location, e))
         twitter_task.delay(keyword=keyword, location=location)
         return redirect('settings')
     return redirect('settings')

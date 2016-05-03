@@ -13,15 +13,6 @@ __author__ = 'ilov3'
 logger = logging.getLogger(__name__) 
 
 
-# NLTK
-# sudo pip install -U nltk
-# python
-# >>> import nltk
-# >>> nltk.download('stopwords')
-# >>> nltk.download('punkt')
-# >>> nltk.download('wordnet')
-# >>> exit()
-
 def nltk_all(request):
     nltk_all_task.delay()
     return redirect('articles_list')
