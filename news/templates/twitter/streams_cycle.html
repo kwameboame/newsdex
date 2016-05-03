@@ -1,0 +1,42 @@
+{% block cycle %}
+    {% if streams %}
+        <table id="example" class="display nowrap table" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Keyword/Location</th>
+                <th>Started</th>
+                <th>Ended</th>
+                <th>Tweets count</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th>Keyword/Location</th>
+                <th>Started</th>
+                <th>Ended</th>
+                <th>Tweets count</th>
+            </tr>
+            </tfoot>
+            <tbody>
+            {% for entry in streams %}
+                <tr>
+                    <td>
+                        <a href="{% url 'tweets_list' task_id=entry.celery_task_id %}">{% firstof entry.filter_location entry.filter_keyword %}</a>
+                    </td>
+                    <td>
+                        {{ entry.started | date:'Y-m-d H:i' }}
+                    </td>
+                    <td>
+                        {{ entry.stopped | date:'Y-m-d H:i' }}
+                    </td>
+                    <td>
+                        {{ entry.tweets_count }}
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

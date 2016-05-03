@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-{% load staticfiles %}
+    {% load staticfiles %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,8 +25,8 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
 
     <div class="container">
-        <div class="navbar-header"> 
-                    <a class="navbar-brand" href="{% url 'homepage' %}" title="Texigram"><img src="{% static 'images/logo.png' %}" /></a>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'homepage' %}" title="Texigram"><img src="{% static 'images/logo.png' %}"/></a>
 
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
@@ -40,7 +40,7 @@
                 <li><a href="{% url 'homepage' %}"><i class="fa fa-home fa-3x fa-fw" aria-hidden="true"></i> Home</a></li>
                 <li><a href="{% url 'articles_list' %}"><i class="fa fa-rss fa-3x fa-fw" aria-hidden="true"></i> Articles</a></li>
                 <li><a href="{% url 'facebook_posts' %}"><i class="fa fa-facebook-official fa-3x fa-fw" aria-hidden="true"></i> Facebook</a></li>
-                <li><a href="{% url 'tweet_list' %}"><i class="fa fa-twitter-square fa-3x fa-fw" aria-hidden="true"></i> Twitter</a></li>
+                <li><a href="{% url 'twitter_streams' %}"><i class="fa fa-twitter-square fa-3x fa-fw" aria-hidden="true"></i> Twitter</a></li>
                 <!-- <li><a href="#"><i class="fa fa-envelope-o fa-3x fa-fw" aria-hidden="true"></i> Email</a></li> -->
                 <!-- <li><a href="#"><i class="fa fa-mobile fa-3x fa-fw" aria-hidden="true"></i> SMS</a></li> -->
                 <!-- <li><a href="#"><i class="fa fa-file-text-o fa-3x fa-fw" aria-hidden="true"></i> Documents</a></li> -->
@@ -58,11 +58,11 @@
 
 <div style="padding-bottom:80px;"></div>
 
-        <footer>
-        <div class="container">
-            <p>&copy; 2016 Texigram</p>
-        </div>
-        </footer>
+<footer>
+    <div class="container">
+        <p>&copy; 2016 Texigram</p>
+    </div>
+</footer>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
@@ -82,7 +82,6 @@
 <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
 
 
-
 <!-- need it for daterangepicker -->
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
@@ -91,22 +90,25 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
-$(document).ready(function() {
-    $('#example').DataTable( {
-        dom: 'lBfrtip',
-        "processing": true,
-        "pageLength": 50,
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
-    } );
-} );
+    $(document).ready(function () {
+        $('#example').DataTable({
+            dom: 'lBfrtip',
+            "processing": true,
+            "pageLength": 50,
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+    });
 
     $(function () {
         $('#daterange').daterangepicker();
         $('#daterange').on('apply.daterangepicker', function (ev, picker) {
-            if ($(this).parent().data('name') == 'nltk') {
+            var name = $(this).parent().data('name');
+            if (name == 'nltk') {
                 ajax_fill('/news/ajax_nltk', picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+            } else if (name == 'streams') {
+                ajax_fill('/news/ajax_streams', picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
             } else {
                 ajax_fill('/news/ajax_articles', picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
             }
@@ -114,8 +116,11 @@ $(document).ready(function() {
         $('.date').click(function () {
             var endDate = new Date();
             var startDate = new Date(endDate.getTime() - parseInt($(this).data('delta')) * 24 * 60 * 60 * 1000);
-            if ($(this).parent().data('name') == 'nltk') {
+            var name = $(this).parent().data('name');
+            if (name == 'nltk') {
                 ajax_fill('/news/ajax_nltk', startDate, endDate);
+            } else if (name == 'streams') {
+                ajax_fill('/news/ajax_streams', startDate, endDate);
             } else {
                 ajax_fill('/news/ajax_articles', startDate, endDate);
             }

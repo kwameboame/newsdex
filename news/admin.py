@@ -11,6 +11,7 @@ admin.site.register(Feed)
 admin.site.register(Article)
 admin.site.register(TwitterUser)
 admin.site.register(Tweet)
+admin.site.register(TwitterStream)
 admin.site.register(TwitterAPISetting)
 
 
