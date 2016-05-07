@@ -21,3 +21,6 @@ def get_active_tasks(name=None):
     except Exception as e:
         logger.error('Error: %s' % e)
     return tasks_list
+
+
+chunks = lambda l, n: [l[i:i + n] for i in range(0, len(l), n)]

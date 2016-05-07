@@ -9,7 +9,7 @@ from django.utils.timezone import now
 
 from news.models import TwitterStream
 
-from news.utils.twitter_utils import subscribe_on_stream
+from news.utils.twitter_utils import subscribe_on_stream, count_retweets
 
 __author__ = 'ilov3'
 logger = logging.getLogger(__name__)
@@ -18,6 +18,11 @@ logger = logging.getLogger(__name__)
 @task(bind=True)
 def twitter_task(self, keyword=None, location=None):
     subscribe_on_stream(keyword=keyword, location=location, task_id=self.request.id)
+
+
+@task
+def count_retweets_task():
+    count_retweets()
 
 
 @task_revoked.connect
