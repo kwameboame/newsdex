@@ -11,12 +11,13 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-8">
-                <table id="example" class="display nowrap table" cellspacing="0" width="100%">
+            <div class="col-md-12">
+                <table id="example" class="display table">
                     <thead>
                     <tr>
                         <th>Twitter user</th>
                         <th>Tweet text</th>
+                        <th>Retweets count</th>
                         <th>Published Date</th>
                     </tr>
                     </thead>
@@ -24,6 +25,7 @@
                     <tr>
                         <th>Twitter user</th>
                         <th>Tweet text</th>
+                        <th>Retweets count</th>
                         <th>Published Date</th>
                     </tr>
                     </tfoot>
@@ -32,6 +34,7 @@
                         <tr>
                             <td>{{ tweet.user.name }}</td>
                             <td>{{ tweet.text }}</td>
+                            <td>{{ tweet.retweet_count }}</td>
                             <td>{{ tweet.created_time }}</td>
                         </tr>
                     {% endfor %}
@@ -40,9 +43,8 @@
                 </table>
 
             </div>
+
         </div>
-
-
     </div> <!-- /container -->
 
 {% endblock %}
